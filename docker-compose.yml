@@ -1,0 +1,41 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app-filastart
+    volumes:
+      - ./laravel:/var/www/html
+    networks:
+      - app-bridge
+
+  webserver:
+    image: nginx:stable-alpine
+    container_name: nginx-filastart
+    ports:
+      - "8000:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf   # Menyambungkan file konfigurasi Nginx
+      - ./laravel:/var/www/html   # Menyambungkan folder app ke dalam container
+    depends_on:
+      - app   # Nginx harus menunggu app (PHP-FPM) siap
+    networks:
+      - app-bridge
+
+  npm:
+    image: node:22.2.0
+    container_name: node-filastart
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./laravel:/var/www/html
+    working_dir: /var/www/html
+    command: npm run dev
+    depends_on:
+      - app   # Nginx harus menunggu app (PHP-FPM) siap
+    networks:
+      - app-bridge
+
+networks:
+  app-bridge:
+    external: true
