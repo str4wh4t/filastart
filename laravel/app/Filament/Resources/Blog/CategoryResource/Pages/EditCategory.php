@@ -20,6 +20,9 @@ class EditCategory extends EditRecord
     #[Url]
     public ?array $tableFilters = null;
 
+    #[Url]
+    public ?string $tableSearch = null;
+
     // protected function getHeaderActions(): array
     // {
     //     return [
@@ -55,7 +58,7 @@ class EditCategory extends EditRecord
                 ->color('gray')
                 ->icon('heroicon-o-chevron-left')
                 // ->alpineClickHandler('document.referrer ? window.history.back() : (window.location.href = ' . \Illuminate\Support\Js::from($this->previousUrl ?? static::getResource()::getUrl('index')) . ')'),
-                ->url(fn (): string => static::getResource()::getUrl('index', ['page' => $this->page, 'activeTab' => $this->activeTab, 'tableFilters' => $this->tableFilters])),
+                ->url(fn (): string => static::getResource()::getUrl('index', ['page' => $this->page, 'activeTab' => $this->activeTab, 'tableFilters' => $this->tableFilters, 'tableSearch' => $this->tableSearch])),
             Actions\DeleteAction::make()->icon('heroicon-o-trash'),
         ];
     }

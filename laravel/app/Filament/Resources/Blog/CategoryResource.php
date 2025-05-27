@@ -252,7 +252,7 @@ class CategoryResource extends Resource implements HasShieldPermissions
                     ->extraModalFooterActions(
                         [
                             Tables\Actions\EditAction::make()
-                                ->url(fn(Category $category, $livewire): string => CategoryResource::getUrl('edit', ['record' => $category, 'page' => $livewire->getPage(), 'activeTab' => $livewire->activeTab, 'tableFilters' => $livewire->tableFilters]))
+                                ->url(fn(Category $category, $livewire): string => CategoryResource::getUrl('edit', ['record' => $category, 'page' => $livewire->getPage(), 'activeTab' => $livewire->activeTab, 'tableFilters' => $livewire->tableFilters, 'tableSearch' => $livewire->tableSearch]))
                                 ->visible(fn(Category $category): bool => !$category->trashed()),
                             Tables\Actions\Action::make('view_posts')
                                 ->icon('fluentui-news-20')
@@ -299,6 +299,7 @@ class CategoryResource extends Resource implements HasShieldPermissions
             ->defaultSort('updated_at', 'desc')
             ->checkIfRecordIsSelectableUsing(
                 function(Category $category): bool{
+                    /** @var \App\Models\User $user */
                     $user = Auth::user();
                     if ($user->hasAnyRole(['admin', config('filament-shield.super_admin.name')])) {
                         return true;

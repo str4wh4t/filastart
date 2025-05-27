@@ -33,7 +33,7 @@ class CreateCategory extends CreateRecord
                 ->label('Back')
                 ->color('gray')
                 ->icon('heroicon-o-chevron-left')
-                ->url(fn (): string => CategoryResource::getUrl('index')),
+                ->url(fn (): string => $this->getResource()::getUrl('index')),
         ];
     }
 }

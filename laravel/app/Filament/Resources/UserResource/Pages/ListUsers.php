@@ -4,17 +4,22 @@ namespace App\Filament\Resources\UserResource\Pages;
 
 use App\Filament\Resources\UserResource;
 use App\Models\User;
+use Closure;
 use Filament\Actions;
 use Filament\Pages\Concerns\ExposesTableToWidgets;
 use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Url;
 
 class ListUsers extends ListRecords
 {
     use ExposesTableToWidgets;
     protected static string $resource = UserResource::class;
+
+    #[Url]
+    public ?string $activeTab = null;
 
     protected function getHeaderActions(): array
     {
@@ -65,5 +70,21 @@ class ListUsers extends ListRecords
         // }
 
         return $model;
+    }
+
+    protected function getTableRecordUrlUsing(): ?Closure
+    {
+        return function (User $user): ?string {
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
+            if(!$user->trashed()) {
+                if ($user->hasAnyRole(['admin', config('filament-shield.super_admin.name')])) {
+                    return static::getResource()::getUrl('edit', ['record' => $user, 'page' => $this->getPage(), 'activeTab' => $this->activeTab, 'tableFilters' => $this->tableFilters, 'tableSearch' => $this->tableSearch]);  
+                }
+                return $user->created_by == Auth::user()->id ? static::getResource()::getUrl('edit', ['record' => $user, 'page' => $this->getPage(), 'activeTab' => $this->activeTab , 'tableFilters' => $this->tableFilters, 'tableSearch' => $this->tableSearch]) : null;
+
+            }
+            return null;
+        };
     }
 }

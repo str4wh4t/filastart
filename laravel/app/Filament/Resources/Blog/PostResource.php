@@ -609,6 +609,7 @@ class PostResource extends Resource implements HasShieldPermissions
             ])
             ->checkIfRecordIsSelectableUsing(
                 function(Post $post): bool{
+                    /** @var \App\Models\User $user */
                     $user = Auth::user();
                     if ($user->hasAnyRole(['admin', config('filament-shield.super_admin.name')])) {
                         return true;

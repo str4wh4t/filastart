@@ -5,12 +5,12 @@ namespace App\Filament\Resources\Blog\PostResource\Pages;
 use App\Filament\Resources\Blog\PostResource;
 use App\Filament\Resources\Blog\PostResource\Widgets\BlogPostStatsWidget;
 use App\Models\Blog\Post;
-use Auth;
 use Closure;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Components\Tab;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Url;
 
 class ListPosts extends ListRecords
@@ -71,12 +71,13 @@ class ListPosts extends ListRecords
     protected function getTableRecordUrlUsing(): ?Closure
     {
         return function (Post $post): ?string {
+            /** @var \App\Models\User $user */
             $user = Auth::user();
             if(!$post->trashed()) {
                 if ($user->hasAnyRole(['admin', config('filament-shield.super_admin.name')])) {
-                    return static::getResource()::getUrl('edit', ['record' => $post, 'page' => $this->getPage(), 'activeTab' => $this->activeTab, 'tableFilters' => $this->tableFilters]);  
+                    return static::getResource()::getUrl('edit', ['record' => $post, 'page' => $this->getPage(), 'activeTab' => $this->activeTab, 'tableFilters' => $this->tableFilters, 'tableSearch' => $this->tableSearch]);  
                 }
-                return $post->created_by == Auth::user()->id ? static::getResource()::getUrl('edit', ['record' => $post, 'page' => $this->getPage(), 'activeTab' => $this->activeTab , 'tableFilters' => $this->tableFilters]) : null;
+                return $post->created_by == Auth::user()->id ? static::getResource()::getUrl('edit', ['record' => $post, 'page' => $this->getPage(), 'activeTab' => $this->activeTab , 'tableFilters' => $this->tableFilters, 'tableSearch' => $this->tableSearch]) : null;
 
             }
             return null;
