@@ -358,6 +358,7 @@ class EditPost extends EditRecord
                             ->body('The post has been replicated successfully.'),
                 ),
             Actions\Action::make('view_on_site')
+                ->color('warning')
                 ->label('Show Live Post')
                 ->url(fn () => $this->record->getUrl())
                 ->icon('heroicon-o-globe-alt')

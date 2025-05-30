@@ -70,33 +70,4 @@ class ListCategories extends ListRecords
         $this->resetPage();
         $this->deselectAllTableRecords();
     }
-
-    protected function getTableActions(): array
-    {
-        return [
-            Tables\Actions\ViewAction::make()
-                    ->hiddenLabel()
-                    ->tooltip('View')
-                    ->extraModalFooterActions(
-                        [
-                            Tables\Actions\EditAction::make()
-                                ->visible(fn(Category $category): bool => !$category->trashed()),
-                            Tables\Actions\Action::make('view_posts')
-                                ->icon('fluentui-news-20')
-                                ->color('success')
-                                ->url(fn(Category $category): string => PostResource::getUrl('index', [
-                                    'tableFilters[blog_category_id][value]' => $category->id
-                                ])),
-                        ]),
-                // Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Edit')->hidden(fn(Category $category): bool => $category->trashed()),
-                Tables\Actions\Action::make('view_posts')
-                    ->hiddenLabel()
-                    ->tooltip('View Posts')
-                    ->icon('fluentui-news-20')
-                    ->color('success')
-                    ->url(fn(Category $record): string => PostResource::getUrl('index', [
-                        'tableFilters[blog_category_id][value]' => $record->id,
-                    ])),
-        ];
-    }
 }

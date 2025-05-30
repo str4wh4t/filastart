@@ -13,6 +13,7 @@ use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Form;
+use Filament\Infolists\Infolist;
 use Filament\Notifications\Auth\VerifyEmail;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
@@ -20,12 +21,15 @@ use Filament\Tables;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 use STS\FilamentImpersonate\Tables\Actions\Impersonate;
+use Filament\Infolists;
+use Filament\Infolists\Components\SpatieMediaLibraryImageEntry;
 
 class UserResource extends Resource
 {
@@ -213,6 +217,41 @@ class UserResource extends Resource
             ->columns(3);
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Infolists\Components\Section::make('User Details')
+                    ->schema([
+                        SpatieMediaLibraryImageEntry::make('media')
+                            ->hiddenLabel()
+                            ->collection('avatars')
+                            ->circular()
+                            ->defaultImageUrl(fn(User $record): ?string => $record->getFilamentAvatarUrl()),
+                        Infolists\Components\TextEntry::make('name'),
+                        Infolists\Components\TextEntry::make('username'),
+                        Infolists\Components\TextEntry::make('email'),
+                        Infolists\Components\TextEntry::make('verified_status')
+                            ->color(fn (string $state): string => match ($state) {
+                                'Verified' => 'success',
+                                'Unverified' => 'warning',
+                            })
+                            ->badge(),
+                        Infolists\Components\TextEntry::make('email_verified_at')->dateTime(),
+                        Infolists\Components\TextEntry::make('created_at')->dateTime(),
+                        Infolists\Components\TextEntry::make('updated_at')->dateTime(),
+                    ])->columns(2),
+                Infolists\Components\Section::make('Roles')
+                    ->schema([
+                        Infolists\Components\TextEntry::make('roles.name')
+                            ->formatStateUsing(fn($state): string => Str::headline($state))
+                            ->badge()
+                            ->formatStateUsing(fn (string $state): HtmlString => new HtmlString($state)),
+                    ])
+                    ->columns(1),
+            ]);
+    }
+
     public static function table(Table $table): Table
     {
         return $table
@@ -227,35 +266,75 @@ class UserResource extends Resource
                     ->searchable(['username', 'firstname', 'lastname']),
                 Tables\Columns\TextColumn::make('roles.name')->label('Role')
                     ->formatStateUsing(fn($state): string => Str::headline($state))
-                    ->colors(['info'])
                     ->badge(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('verified_status')
+                    ->label('Verified')
+                    ->color(fn (string $state): string => match ($state) {
+                        'Verified' => 'success',
+                        'Unverified' => 'warning',
+                    })
+                    ->badge()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('email_verified_at')->label('Verified at')
                     ->dateTime('M j, Y H:i')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('role_id')
+                    ->label('Role')
+                    ->relationship('roles', 'name', function ($query) {
+                        return $query->whereNotIn('name', [config('filament-shield.super_admin.name'), 'admin', 'author']);
+                    })
+                    ->searchable()
+                    ->multiple()
+                    ->preload(),
+                Tables\Filters\TernaryFilter::make('email_verified_at')
+                    ->label('Email verification')
+                    ->placeholder('All users')
+                    ->trueLabel('Verified users')
+                    ->falseLabel('Unverified users')
+                    ->queries(
+                        true: fn (Builder $query) => $query->whereNotNull('email_verified_at'),
+                        false: fn (Builder $query) => $query->whereNull('email_verified_at'),
+                        blank: fn (Builder $query) => $query, // In this example, we do not want to filter the query when it is blank.
+                    ),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->hiddenLabel()
+                    ->tooltip('View')
+                    ->extraModalFooterActions(
+                        [
+                            Tables\Actions\EditAction::make()
+                                ->url(fn(User $user, $livewire): string => 
+                                    UserResource::getUrl('edit', [
+                                            'record' => $user, 
+                                            'page' => $livewire->getPage(), 
+                                            'activeTab' => $livewire->activeTab, 
+                                            'tableFilters' => $livewire->tableFilters, 
+                                            'tableSearch' => $livewire->tableSearch
+                                        ]))
+                                ->visible(fn(User $user): bool => !$user->trashed()),
+                            Tables\Actions\DeleteAction::make(),
+                        ]),
                 Impersonate::make()->requiresConfirmation()->color('gray')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->recordUrl(null);
     }
 
     public static function getRelations(): array

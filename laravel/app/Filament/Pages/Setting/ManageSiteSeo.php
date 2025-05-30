@@ -77,6 +77,7 @@ class ManageSiteSeo extends SettingsPage
                 ->modalHeading('SEO Settings Guide')
                 ->modalDescription('A comprehensive guide to using Settings in your website.')
                 ->modalIcon('heroicon-o-document-text')
+                ->modalAlignment(\Filament\Support\Enums\Alignment::Center)
                 ->modalWidth('4xl')
                 ->action(function () {
                     // Just close the modal

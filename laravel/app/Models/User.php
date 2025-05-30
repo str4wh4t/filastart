@@ -52,6 +52,8 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
         'remember_token',
     ];
 
+    protected $appends = ['name'];
+
     /**
      * The attributes that should be cast.
      *
@@ -88,6 +90,11 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
     public function getNameAttribute()
     {
         return "{$this->firstname} {$this->lastname}";
+    }
+
+    public function getVerifiedStatusAttribute(): string
+    {
+        return empty($this->email_verified_at) ? 'Unverified' : 'Verified';
     }
 
     public function isSuperAdmin(): bool

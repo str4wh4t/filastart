@@ -144,6 +144,10 @@
     @apply dark:bg-gray-400;
 } */
 
+.fi-avatar, .fi-ta-image img, .fi-in-image img  {
+    @apply border-2 border-gray-600 dark:border-white;
+}
+
 #impersonate-banner {
     @apply z-40 !important;
 }

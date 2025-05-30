@@ -75,10 +75,10 @@ class ListUsers extends ListRecords
     protected function getTableRecordUrlUsing(): ?Closure
     {
         return function (User $user): ?string {
-            /** @var \App\Models\User $user */
-            $user = Auth::user();
+            /** @var \App\Models\User $login_user */
+            $login_user = Auth::user();
             if(!$user->trashed()) {
-                if ($user->hasAnyRole(['admin', config('filament-shield.super_admin.name')])) {
+                if ($login_user->hasAnyRole(['admin', config('filament-shield.super_admin.name')])) {
                     return static::getResource()::getUrl('edit', ['record' => $user, 'page' => $this->getPage(), 'activeTab' => $this->activeTab, 'tableFilters' => $this->tableFilters, 'tableSearch' => $this->tableSearch]);  
                 }
                 return $user->created_by == Auth::user()->id ? static::getResource()::getUrl('edit', ['record' => $user, 'page' => $this->getPage(), 'activeTab' => $this->activeTab , 'tableFilters' => $this->tableFilters, 'tableSearch' => $this->tableSearch]) : null;

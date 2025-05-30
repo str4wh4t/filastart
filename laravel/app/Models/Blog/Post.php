@@ -105,9 +105,9 @@ class Post extends Model implements HasMedia
         });
 
         static::updating(function ($post) {
-            if ($post->isDirty('title') && !$post->isDirty('slug')) {
-                $post->slug = Str::slug($post->title);
-            }
+            // if ($post->isDirty('title') && !$post->isDirty('slug')) {
+            //     $post->slug = Str::slug($post->title);
+            // }
         });
 
         static::deleting(function (Post $post) {

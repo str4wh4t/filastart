@@ -453,12 +453,12 @@ class PostResource extends Resource implements HasShieldPermissions
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->date()
+                    ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->date()
+                    ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
@@ -467,7 +467,7 @@ class PostResource extends Resource implements HasShieldPermissions
                 true => '!border-x-2 !border-x-success-600 dark:!border-x-success-300',
                 default => '',
             })
-            ->defaultSort('updated_at', 'desc')
+            // ->defaultSort('updated_at', 'desc')
             ->filters([
                 // TrashedFilter::make(),
                 Tables\Filters\SelectFilter::make('status')
@@ -505,7 +505,14 @@ class PostResource extends Resource implements HasShieldPermissions
                         ->extraModalFooterActions(
                             [
                                 Tables\Actions\EditAction::make()
-                                    ->label('Edit')
+                                    ->url(fn(Post $post, $livewire): string => 
+                                            PostResource::getUrl('edit', [
+                                                    'record' => $post, 
+                                                    'page' => $livewire->getPage(), 
+                                                    'activeTab' => $livewire->activeTab, 
+                                                    'tableFilters' => $livewire->tableFilters, 
+                                                    'tableSearch' => $livewire->tableSearch
+                                                ]))
                                     ->deselectRecordsAfterCompletion()
                                     ->visible(fn(Post $post): bool => !$post->trashed()),
                                 Tables\Actions\DeleteAction::make()
@@ -517,23 +524,21 @@ class PostResource extends Resource implements HasShieldPermissions
                                             $post->status = 'draft';
                                             $post->save();
                                         }
-                                    })
-                                    ->visible(fn(Post $post): bool => !$post->trashed()),
+                                    }),
                                 Tables\Actions\RestoreAction::make()
                                     ->color('success')
                                     ->cancelParentActions()
-                                    ->deselectRecordsAfterCompletion()
-                                    ->visible(fn(Post $post): bool => $post->trashed()),
+                                    ->deselectRecordsAfterCompletion(),
                                 Tables\Actions\ForceDeleteAction::make()
                                     ->cancelParentActions()
-                                    ->deselectRecordsAfterCompletion()
-                                    ->visible(fn(Post $post): bool => $post->trashed()),
+                                    ->deselectRecordsAfterCompletion(),
                                 Tables\Actions\Action::make('view_on_site')
+                                    ->color('warning')
                                     ->label('Show Live Post')
                                     ->url(fn (Post $post) => $post->getUrl())
                                     ->icon('heroicon-o-globe-alt')
                                     ->openUrlInNewTab()
-                                    ->visible(fn(Post $post): bool => !$post->trashed()),
+                                    ->visible(fn(Post $post): bool => !$post->trashed() && $post->is_published),
                             ]
                         )
                         ->modalWidth(MaxWidth::ScreenExtraLarge),

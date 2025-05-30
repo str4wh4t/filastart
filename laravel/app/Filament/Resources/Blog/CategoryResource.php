@@ -218,6 +218,10 @@ class CategoryResource extends Resource implements HasShieldPermissions
                     ->counts('posts')
                     ->sortable()
                     ->alignCenter(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->since()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->since()
                     ->sortable()
@@ -252,11 +256,29 @@ class CategoryResource extends Resource implements HasShieldPermissions
                     ->extraModalFooterActions(
                         [
                             Tables\Actions\EditAction::make()
-                                ->url(fn(Category $category, $livewire): string => CategoryResource::getUrl('edit', ['record' => $category, 'page' => $livewire->getPage(), 'activeTab' => $livewire->activeTab, 'tableFilters' => $livewire->tableFilters, 'tableSearch' => $livewire->tableSearch]))
+                                ->url(fn(Category $category, $livewire): string => 
+                                    CategoryResource::getUrl('edit', [
+                                            'record' => $category, 
+                                            'page' => $livewire->getPage(), 
+                                            'activeTab' => $livewire->activeTab, 
+                                            'tableFilters' => $livewire->tableFilters, 
+                                            'tableSearch' => $livewire->tableSearch
+                                        ]))
                                 ->visible(fn(Category $category): bool => !$category->trashed()),
+                            Tables\Actions\DeleteAction::make()
+                                    ->label('Trash')
+                                    ->cancelParentActions()
+                                    ->deselectRecordsAfterCompletion(),
+                            Tables\Actions\RestoreAction::make()
+                                    ->color('success')
+                                    ->cancelParentActions()
+                                    ->deselectRecordsAfterCompletion(),
+                            Tables\Actions\ForceDeleteAction::make()
+                                    ->cancelParentActions()
+                                    ->deselectRecordsAfterCompletion(),
                             Tables\Actions\Action::make('view_posts')
                                 ->icon('fluentui-news-20')
-                                ->color('success')
+                                ->color('warning')
                                 ->url(fn(Category $category): string => PostResource::getUrl('index', [
                                     'tableFilters[blog_category_id][value]' => $category->id
                                 ])),
@@ -266,7 +288,7 @@ class CategoryResource extends Resource implements HasShieldPermissions
                     ->hiddenLabel()
                     ->tooltip('View Posts')
                     ->icon('fluentui-news-20')
-                    ->color('success')
+                    ->color('warning')
                     ->url(fn(Category $category): string => PostResource::getUrl('index', [
                         'tableFilters[blog_category_id][value]' => $category->id,
                     ])),
@@ -296,7 +318,7 @@ class CategoryResource extends Resource implements HasShieldPermissions
                         ->visible(fn ($livewire): bool => $livewire->activeTab !== 'trashed'),
                 ]),
             ])
-            ->defaultSort('updated_at', 'desc')
+            // ->defaultSort('updated_at', 'desc')
             ->checkIfRecordIsSelectableUsing(
                 function(Category $category): bool{
                     /** @var \App\Models\User $user */
