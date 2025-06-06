@@ -11,6 +11,7 @@ use Filament\Pages\SettingsPage;
 use Filament\Support\Facades\FilamentView;
 use Illuminate\Contracts\Support\Htmlable;
 use Riodwanto\FilamentAceEditor\AceEditor;
+use Schmeits\FilamentCharacterCounter\Forms\Components\Textarea;
 
 use function Filament\Support\is_app_url;
 
@@ -101,7 +102,7 @@ class ManageSiteScript extends SettingsPage
                                                 })
                                                 ->helperText('The URL to your cookie policy page'),
                                         ])->columns(2),
-                                        Forms\Components\Textarea::make('cookie_consent_text')
+                                        Textarea::make('cookie_consent_text')
                                             ->label('Consent Text')
                                             ->rows(2)
                                             ->maxLength(300)
@@ -152,7 +153,7 @@ class ManageSiteScript extends SettingsPage
                 ->success()
                 ->send();
 
-            $this->redirect(static::getUrl(), navigate: FilamentView::hasSpaMode() && is_app_url(static::getUrl()));
+            // $this->redirect(static::getUrl(), navigate: FilamentView::hasSpaMode() && is_app_url(static::getUrl()));
         } catch (\Throwable $th) {
             Notification::make()
                 ->title('Error saving settings')
@@ -187,5 +188,16 @@ class ManageSiteScript extends SettingsPage
     public function getSubheading(): string|Htmlable|null
     {
         return 'Manage your website\'s scripts, analytics, and custom code';
+    }
+
+    public function getFormActions(): array
+    {
+        return [
+            // ...parent::getFormActions(),
+            parent::getSaveFormAction()
+                ->label('Save Changes')
+                ->color('success')
+                ->icon('heroicon-o-check-circle'),
+        ];
     }
 }

@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Banner;
 use App\Filament\Resources\Banner\CategoryResource\Pages;
 use App\Filament\Resources\Banner\CategoryResource\RelationManagers;
 use App\Models\Banner\Category;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms;
 use Filament\Infolists;
 use Filament\Forms\Form;
@@ -15,18 +16,40 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Filament\Forms\Components\Tabs;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Model;
+use Schmeits\FilamentCharacterCounter\Forms\Components\Textarea;
 
-class CategoryResource extends Resource
+class CategoryResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Category::class;
 
-    protected static ?string $recordTitleAttribute = 'name';
-
+    
     protected static ?string $slug = 'banner/categories';
-
+    
     protected static ?int $navigationSort = -1;
     protected static ?string $navigationIcon = 'fluentui-stack-20';
     protected static ?string $navigationLabel = 'Categories';
+    
+    protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'restore',
+            'restore_any',
+            'delete',
+            'delete_any',
+            'force_delete',
+            'force_delete_any',
+        ];
+    }
 
     public static function form(Form $form): Form
     {
@@ -59,10 +82,58 @@ class CategoryResource extends Resource
                                         $operation === 'create' ? $set('slug', Str::slug($state)) : null),
 
                                 Forms\Components\TextInput::make('slug')
+                                    ->disabled()
+                                    ->dehydrated()
                                     ->required()
                                     ->maxLength(255)
                                     ->unique(Category::class, 'slug', ignoreRecord: true)
-                                    ->helperText('URL-friendly name. Will be auto-generated from the name if left empty.'),
+                                    ->helperText('URL-friendly name. Will be auto-generated from the name if left empty.')
+                                    ->suffixAction(
+                                        Forms\Components\Actions\Action::make('editSlug')
+                                            ->modal()
+                                            ->icon('heroicon-o-pencil-square')
+                                            ->modalHeading('Edit Slug')
+                                            ->modalDescription('Customize the URL slug for this Post. Use lowercase letters, numbers, and hyphens only.')
+                                            ->modalIcon('heroicon-o-link')
+                                            ->modalSubmitActionLabel('Update Slug')
+                                            ->form([
+                                                Forms\Components\TextInput::make('new_slug')
+                                                    ->hiddenLabel()
+                                                    ->required()
+                                                    ->maxLength(255)
+                                                    // ->live(debounce: 500)
+                                                    // ->afterStateUpdated(function (?string $state, Set $set) {
+                                                    //     if(!empty($state)) {
+                                                    //         $set('slug', Str::slug($state));
+                                                    //     }
+                                                    // })
+                                                    ->unique(Category::class, 'slug', ignoreRecord: true)
+                                                    ->helperText('The slug will be automatically formatted as you type.')
+                                            ])
+                                            ->fillForm(fn (Get $get): array => [
+                                                'new_slug' => $get('slug'),
+                                            ])
+                                            ->action(function (Forms\Components\Actions\Action $action, array $data, Set $set) {
+                                                // Validate the new slug
+                                                if (empty($data['new_slug']) || !preg_match('/^[a-z0-9-]+$/', $data['new_slug'])) {
+                                                    Notification::make()
+                                                        ->title('Slug Update Failed')
+                                                        ->body('The slug must contain only lowercase letters, numbers, and hyphens.')
+                                                        ->danger()
+                                                        ->send();
+
+                                                    $action->halt();
+                                                    
+                                                }
+                                                $set('slug', $data['new_slug']);
+
+                                                // Notification::make()
+                                                //     ->title('Slug updated')
+                                                //     ->success()
+                                                //     ->send();
+                                            })
+                                            ->hidden(fn(string $operation): bool => $operation === 'view')
+                                    ),
 
                                 Forms\Components\Select::make('locale')
                                     ->options([
@@ -178,7 +249,7 @@ class CategoryResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable()
-                    ->description(fn(Category $record) => $record->parent ? "Child of {$record->parent->name}" : '')
+                    ->description(fn(Category $record) => $record->parent ? "Child of : {$record->parent->name}" : '')
                     ->wrap(),
                 Tables\Columns\TextColumn::make('slug')
                     ->searchable()
@@ -198,10 +269,16 @@ class CategoryResource extends Resource
                     ->counts('banners')
                     ->sortable()
                     ->alignCenter(),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->since()
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Created At')
+                    ->date()
                     ->sortable()
                     ->toggleable(),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Last Update')
+                    ->since()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('parent_id')
@@ -226,59 +303,88 @@ class CategoryResource extends Resource
                     ),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()->hiddenLabel()->tooltip('View'),
-                Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Edit'),
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\Action::make('view_banners')
-                        ->label('View Banners')
-                        ->icon('heroicon-m-photo')
-                        ->url(fn(Category $record): string => ContentResource::getUrl('index', [
-                            'tableFilters[banner_category_id][value]' => $record->id,
-                        ]))
-                        ->openUrlInNewTab(),
-                    Tables\Actions\Action::make('clone')
-                        ->label('Clone Category')
-                        ->icon('heroicon-m-document-duplicate')
-                        ->requiresConfirmation()
-                        ->action(function (Category $record) {
-                            // Get only the fillable attributes
-                            $attributes = $record->only($record->getFillable());
+                Tables\Actions\ViewAction::make()
+                    ->url(fn(Category $category, $livewire): string => 
+                        CategoryResource::getUrl('view', [
+                                'record' => $category, 
+                                'page' => $livewire->getPage(), 
+                                'activeTab' => $livewire->activeTab, 
+                                'tableFilters' => $livewire->tableFilters, 
+                                'tableSearch' => $livewire->tableSearch
+                            ]))
+                    ->hiddenLabel(),
+                Tables\Actions\EditAction::make()
+                        ->color('primary')
+                        ->hiddenLabel()
+                        ->url(fn(Category $category, $livewire): string => 
+                            CategoryResource::getUrl('edit', [
+                                    'record' => $category, 
+                                    'page' => $livewire->getPage(), 
+                                    'activeTab' => $livewire->activeTab, 
+                                    'tableFilters' => $livewire->tableFilters, 
+                                    'tableSearch' => $livewire->tableSearch
+                                ]))
+                        ->hidden(fn(Category $category): bool => $category->trashed()),
+                // Tables\Actions\ActionGroup::make([
+                //     Tables\Actions\Action::make('view_banners')
+                //         ->label('View Banners')
+                //         ->icon('heroicon-m-photo')
+                //         ->url(fn(Category $record): string => ContentResource::getUrl('index', [
+                //             'tableFilters[banner_category_id][value]' => $record->id,
+                //         ]))
+                //         ->openUrlInNewTab(),
+                //     Tables\Actions\Action::make('clone')
+                //         ->label('Clone Category')
+                //         ->icon('heroicon-m-document-duplicate')
+                //         ->requiresConfirmation()
+                //         ->action(function (Category $record) {
+                //             // Get only the fillable attributes
+                //             $attributes = $record->only($record->getFillable());
 
-                            // Create a new instance and fill it with the attributes
-                            $clone = new Category($attributes);
+                //             // Create a new instance and fill it with the attributes
+                //             $clone = new Category($attributes);
 
-                            // Set the new name and slug
-                            $clone->name = "{$record->name} (Clone)";
-                            $clone->slug = Str::slug($clone->name);
+                //             // Set the new name and slug
+                //             $clone->name = "{$record->name} (Clone)";
+                //             $clone->slug = Str::slug($clone->name);
 
-                            // Set the creator/updater
-                            $clone->created_by = auth()->id();
-                            $clone->updated_by = auth()->id();
+                //             // Set the creator/updater
+                //             $clone->created_by = auth()->id();
+                //             $clone->updated_by = auth()->id();
 
-                            // Save the clone
-                            $clone->save();
+                //             // Save the clone
+                //             $clone->save();
 
-                            // Redirect to the edit page of the new clone
-                            return redirect()->route('filament.admin.resources.banner.categories.edit', ['record' => $clone->id]);
-                        }),
-                ]),
+                //             // Redirect to the edit page of the new clone
+                //             return redirect()->route('filament.admin.resources.banner.categories.edit', ['record' => $clone->id]);
+                //         }),
+                // ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()->label('Trash selected')
+                        ->visible(fn ($livewire): bool => $livewire->activeTab !== 'trashed'),
+                    Tables\Actions\RestoreBulkAction::make()
+                        ->color('success')
+                        ->visible(fn ($livewire): bool => $livewire->activeTab === 'trashed'),
+                    Tables\Actions\ForceDeleteBulkAction::make()
+                        ->visible(fn ($livewire): bool => $livewire->activeTab === 'trashed'),
                     Tables\Actions\BulkAction::make('activate')
                         ->label('Set Active')
                         ->icon('heroicon-m-check-circle')
+                        ->color('success')
                         ->requiresConfirmation()
-                        ->action(fn(Category $records) => $records->each->update(['is_active' => true])),
+                        ->action(fn(Category $records) => $records->each->update(['is_active' => true]))
+                        ->visible(fn ($livewire): bool => $livewire->activeTab !== 'trashed'),
                     Tables\Actions\BulkAction::make('deactivate')
                         ->label('Set Inactive')
                         ->icon('heroicon-m-x-circle')
+                        ->color('warning')
                         ->requiresConfirmation()
-                        ->action(fn(Category $records) => $records->each->update(['is_active' => false])),
+                        ->action(fn(Category $records) => $records->each->update(['is_active' => false]))
+                        ->visible(fn ($livewire): bool => $livewire->activeTab !== 'trashed'),
                 ]),
-            ])
-            ->defaultSort('updated_at', 'desc');
+            ]);
     }
 
     public static function getRelations(): array
@@ -308,5 +414,27 @@ class CategoryResource extends Resource
     {
         return parent::getEloquentQuery()
             ->withCount('banners');
+    }
+
+    // public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
+    // {
+    //     return $record->name;
+    // }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'slug'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            'Author' => $record->creator->name,
+        ];
+    }
+
+    public static function getGlobalSearchResultUrl(Model $record): string
+    {
+        return CategoryResource::getUrl('index', ['tableSearch' => $record->name]);
     }
 }

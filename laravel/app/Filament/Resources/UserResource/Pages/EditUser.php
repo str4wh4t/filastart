@@ -115,24 +115,10 @@ class EditUser extends EditRecord
     {
         return [
             // ...parent::getFormActions(),
-            Actions\Action::make('save')
-                ->label('Save')
+            parent::getSaveFormAction()
+                ->label('Save Changes')
                 ->color('success')
-                ->icon('heroicon-o-check-circle')
-                ->keyBindings(['mod+s'])
-                ->submit('save'),
-                // ->action(function () {
-                //     // Validasi & proses manual jika mau custom
-                //     $data = $this->form->getState();
-
-                //     // Custom logic...
-                //     $this->record->update($data);
-
-                //     Notification::make()
-                //         ->title('Saved')
-                //         ->success()
-                //         ->send();
-                // }),
+                ->icon('heroicon-o-check-circle'),
             Actions\Action::make('create')
                 ->label('Create Another')
                 ->color('primary')

@@ -21,7 +21,7 @@ return new class extends SettingsMigration
         $this->migrator->add('sites.custom_500_message', 'We\'ve encountered an unexpected glitch. Our team has been notified and is working to restore service.');
         $this->migrator->add('sites.company_name', 'SuperDuper Starter');
         $this->migrator->add('sites.company_email', 'hello@superduperstarter.com');
-        $this->migrator->add('sites.company_phone', '+1 (800) 123-4567');
+        $this->migrator->add('sites.company_phone', '62-81-6231-3123');
         $this->migrator->add('sites.company_address', 'Innovation Tower, 101 Tech Boulevard, Digital City, 10101');
     }
 };

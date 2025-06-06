@@ -14,6 +14,7 @@ use Filament\Pages\SettingsPage;
 use Filament\Support\Facades\FilamentView;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Mail;
+use Schmeits\FilamentCharacterCounter\Forms\Components\Textarea;
 
 use function Filament\Support\is_app_url;
 
@@ -219,8 +220,8 @@ class ManageMail extends SettingsPage
                                                 Forms\Components\TextInput::make('test_to_address')
                                                     ->label('Send Test To')
                                                     ->placeholder('recipient@example.com')
-                                                    ->email()
-                                                    ->required(),
+                                                    // ->required()
+                                                    ->email(),
                                                 Forms\Components\Toggle::make('include_sample_attachment')
                                                     ->label('Include Sample Attachment')
                                                     ->helperText('Adds a text file attachment to test attachment handling')
@@ -346,11 +347,11 @@ class ManageMail extends SettingsPage
                                         Forms\Components\Select::make('template_theme')
                                             ->label('Email Template Theme')
                                             ->options([
-                                                'default' => 'Default Theme',
+                                                'default' => 'Default',
                                                 'minimal' => 'Minimal',
                                                 'corporate' => 'Corporate',
                                                 'modern' => 'Modern',
-                                                'dark' => 'Dark Mode',
+                                                'dark' => 'Dark',
                                             ])
                                             ->default('default')
                                             ->columnSpan(2),
@@ -369,8 +370,9 @@ class ManageMail extends SettingsPage
                                             ->imageCropAspectRatio('4:1')
                                             ->imageResizeTargetWidth('300')
                                             ->imageResizeTargetHeight('75')
-                                            ->columnSpan(2),
-                                        Forms\Components\Textarea::make('footer_text')
+                                            ->columnSpan(2)
+                                            ->helperText('Upload a logo for your emails. Recommended size: 300x75px'),
+                                        Textarea::make('footer_text')
                                             ->label('Email Footer Text')
                                             ->default('© ' . date('Y') . ' SuperDuper Starter. All rights reserved.')
                                             ->rows(2)
@@ -382,15 +384,40 @@ class ManageMail extends SettingsPage
                                     ->description('See how your emails will appear to recipients')
                                     ->schema([
                                         Forms\Components\View::make('filament.components.email-template-preview')
-                                            ->extraAttributes(function (callable $get) {
+                                            ->viewData(function (callable $get) {
+                                                $logo_path = 'https://placehold.co/300x75.jpeg?text=No%20Image';
+                                                if(isset(array_values($get('logo_path'))[0])){
+                                                    $path = array_values($get('logo_path'))[0];
+                                                    if(! \Illuminate\Support\Str::contains('tmp', $path)){
+                                                        $logo_path = asset('storage/' . $path);
+                                                    } 
+                                                }
                                                 return [
-                                                    'primary-color' => $get('primary_color') ?? '#2D2B8D',
-                                                    'secondary-color' => $get('secondary_color') ?? '#FFC903',
-                                                    'logo-path' => $get('logo_path'),
-                                                    'theme-name' => $get('template_theme') ?? 'default',
-                                                    'footer-text' => $get('footer_text') ?? ('© ' . date('Y') . ' SuperDuper Starter. All rights reserved.'),
+                                                    'primary_color' => $get('primary_color') ?? '#2D2B8D',
+                                                    'secondary_color' => $get('secondary_color') ?? '#FFC903',
+                                                    'logo_path' => $logo_path,
+                                                    'template_theme' => $get('template_theme') ?? 'default',
+                                                    'footer_text' => $get('footer_text') ?? ('© ' . date('Y') . ' SuperDuper Starter. All rights reserved.'),
                                                 ];
                                             })
+                                            // ->extraAttributes(function (callable $get) {
+                                            //     return [
+                                            //         'primary_color' => $get('primary_color') ?? '#2D2B8D',
+                                            //         'secondary_color' => $get('secondary_color') ?? '#FFC903',
+                                            //         'logo_path' => $get('logo_path'),
+                                            //         'theme_name' => $get('template_theme') ?? 'default',
+                                            //         'footer_text' => $get('footer_text') ?? ('© ' . date('Y') . ' SuperDuper Starter. All rights reserved.'),
+                                            //     ];
+                                            // })
+                                            // ->extraAttributes(function (callable $get) {
+                                            //     return [
+                                            //         'primary-color' => $get('primary_color') ?? '#2D2B8D',
+                                            //         'secondary-color' => $get('secondary_color') ?? '#FFC903',
+                                            //         'logo-path' => $get('logo_path'),
+                                            //         'theme-name' => $get('template_theme') ?? 'default',
+                                            //         'footer-text' => $get('footer_text') ?? ('© ' . date('Y') . ' SuperDuper Starter. All rights reserved.'),
+                                            //     ];
+                                            // })
                                             ->columnSpan('full'),
                                     ]),
                             ]),
@@ -400,7 +427,7 @@ class ManageMail extends SettingsPage
             ->statePath('data');
     }
 
-    public function save(MailSettings $settings = null): void
+    public function save(?MailSettings $settings = null): void
     {
         try {
             $this->callHook('beforeValidate');
@@ -423,7 +450,7 @@ class ManageMail extends SettingsPage
 
             $this->sendSuccessNotification('Mail settings updated successfully.');
 
-            $this->redirect(static::getUrl(), navigate: FilamentView::hasSpaMode() && is_app_url(static::getUrl()));
+            // $this->redirect(static::getUrl(), navigate: FilamentView::hasSpaMode() && is_app_url(static::getUrl()));
         } catch (\Throwable $th) {
             $this->sendErrorNotification('Failed to update settings: '.$th->getMessage());
             throw $th;
@@ -504,7 +531,7 @@ class ManageMail extends SettingsPage
         }
     }
 
-    public function sendTestMail(MailSettings $settings = null)
+    public function sendTestMail(?MailSettings $settings = null)
     {
         $data = $this->form->getState();
 
@@ -583,6 +610,17 @@ class ManageMail extends SettingsPage
     public function getSubheading(): string|Htmlable|null
     {
         return __("page.mail_settings.subheading");
+    }
+
+    public function getFormActions(): array
+    {
+        return [
+            // ...parent::getFormActions(),
+            parent::getSaveFormAction()
+                ->label('Save Changes')
+                ->color('success')
+                ->icon('heroicon-o-check-circle'),
+        ];
     }
 }
 

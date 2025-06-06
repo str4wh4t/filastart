@@ -75,7 +75,7 @@ class ManageSite extends SettingsPage
                             ->visibility('public')
                             ->imagePreviewHeight('100')
                             ->maxSize(1024)
-                            ->helperText('Recommended size: 200x50 pixels'),
+                            ->helperText('Recommended size: 240x50 pixels'),
                     ]),
 
                 Forms\Components\Section::make('Company Information')
@@ -207,7 +207,7 @@ class ManageSite extends SettingsPage
                 ->success()
                 ->send();
 
-            $this->redirect(static::getUrl(), navigate: FilamentView::hasSpaMode() && is_app_url(static::getUrl()));
+            // $this->redirect(static::getUrl(), navigate: FilamentView::hasSpaMode() && is_app_url(static::getUrl()));
         } catch (\Throwable $th) {
             Notification::make()
                 ->title('Error saving settings')
@@ -242,5 +242,16 @@ class ManageSite extends SettingsPage
     public function getSubheading(): string|Htmlable|null
     {
         return 'Manage your website\'s general configuration';
+    }
+
+    public function getFormActions(): array
+    {
+        return [
+            // ...parent::getFormActions(),
+            parent::getSaveFormAction()
+                ->label('Save Changes')
+                ->color('success')
+                ->icon('heroicon-o-check-circle'),
+        ];
     }
 }

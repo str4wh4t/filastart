@@ -39,11 +39,7 @@ class CategoryPolicy
      */
     public function update(User $user, Category $category): bool
     {
-        if ($user->hasAnyRole(['admin', config('filament-shield.super_admin.name')])) {
-            return true;
-        }
-
-        return $user->can('update_blog::category') && $user->id === $category->creator->id;
+        return $user->can('update_blog::category');
     }
 
     /**
@@ -51,11 +47,7 @@ class CategoryPolicy
      */
     public function delete(User $user, Category $category): bool
     {
-        if ($user->hasAnyRole(['admin', config('filament-shield.super_admin.name')])) {
-            return true;
-        }
-
-        return $user->can('delete_blog::category') && $user->id === $category->creator->id;
+        return $user->can('delete_blog::category');
     }
 
     /**
@@ -71,11 +63,7 @@ class CategoryPolicy
      */
     public function forceDelete(User $user, Category $category): bool
     {
-        if ($user->hasAnyRole(['admin', config('filament-shield.super_admin.name')])) {
-            return true;
-        }
-
-        return $user->can('force_delete_blog::category') && $user->id === $category->creator->id;
+        return $user->can('force_delete_blog::category');
     }
 
     /**
@@ -91,11 +79,7 @@ class CategoryPolicy
      */
     public function restore(User $user, Category $category): bool
     {
-        if ($user->hasAnyRole(['admin', config('filament-shield.super_admin.name')])) {
-            return true;
-        }
-
-        return $user->can('restore_blog::category') && $user->id === $category->creator->id;
+        return $user->can('restore_blog::category');
     }
 
     /**

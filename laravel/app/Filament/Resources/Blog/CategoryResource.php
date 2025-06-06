@@ -15,19 +15,23 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Filament\Forms\Components\Tabs;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
 
 class CategoryResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Category::class;
 
-    protected static ?string $recordTitleAttribute = 'name';
-
     protected static ?string $slug = 'blog/categories';
-
+    
     protected static ?int $navigationSort = -1;
     protected static ?string $navigationIcon = 'fluentui-stack-20';
+    
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function getPermissionPrefixes(): array
     {
@@ -53,6 +57,67 @@ class CategoryResource extends Resource implements HasShieldPermissions
                     ->tabs([
                         Tabs\Tab::make('Basic Information')
                             ->schema([
+                                Forms\Components\TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(fn(string $operation, $state, Forms\Set $set) =>
+                                        $operation === 'create' ? $set('slug', Str::slug($state)) : null),
+
+                                Forms\Components\TextInput::make('slug')
+                                    ->disabled()
+                                    ->dehydrated()
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->unique(Category::class, 'slug', ignoreRecord: true)
+                                    ->helperText('URL-friendly name. Will be auto-generated from the name if left empty.')
+                                    ->suffixAction(
+                                        Forms\Components\Actions\Action::make('editSlug')
+                                            ->modal()
+                                            ->icon('heroicon-o-pencil-square')
+                                            ->modalHeading('Edit Slug')
+                                            ->modalDescription('Customize the URL slug for this Post. Use lowercase letters, numbers, and hyphens only.')
+                                            ->modalIcon('heroicon-o-link')
+                                            ->modalSubmitActionLabel('Update Slug')
+                                            ->form([
+                                                Forms\Components\TextInput::make('new_slug')
+                                                    ->hiddenLabel()
+                                                    ->required()
+                                                    ->maxLength(255)
+                                                    // ->live(debounce: 500)
+                                                    // ->afterStateUpdated(function (?string $state, Set $set) {
+                                                    //     if(!empty($state)) {
+                                                    //         $set('slug', Str::slug($state));
+                                                    //     }
+                                                    // })
+                                                    ->unique(Category::class, 'slug', ignoreRecord: true)
+                                                    ->helperText('The slug will be automatically formatted as you type.')
+                                            ])
+                                            ->fillForm(fn (Get $get): array => [
+                                                'new_slug' => $get('slug'),
+                                            ])
+                                            ->action(function (Forms\Components\Actions\Action $action, array $data, Set $set) {
+                                                // Validate the new slug
+                                                if (empty($data['new_slug']) || !preg_match('/^[a-z0-9-]+$/', $data['new_slug'])) {
+                                                    Notification::make()
+                                                        ->title('Slug Update Failed')
+                                                        ->body('The slug must contain only lowercase letters, numbers, and hyphens.')
+                                                        ->danger()
+                                                        ->send();
+
+                                                    $action->halt();
+                                                    
+                                                }
+                                                $set('slug', $data['new_slug']);
+
+                                                // Notification::make()
+                                                //     ->title('Slug updated')
+                                                //     ->success()
+                                                //     ->send();
+                                            })
+                                            ->hidden(fn(string $operation): bool => $operation === 'view')
+                                    ),
+
                                 Forms\Components\Select::make('parent_id')
                                     ->label('Parent Category')
                                     ->options(function () {
@@ -67,19 +132,6 @@ class CategoryResource extends Resource implements HasShieldPermissions
                                     ->nullable()
                                     ->preload()
                                     ->columnSpan('full'),
-
-                                Forms\Components\TextInput::make('name')
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->live(onBlur: true)
-                                    ->afterStateUpdated(fn(string $operation, $state, Forms\Set $set) =>
-                                        $operation === 'create' ? $set('slug', Str::slug($state)) : null),
-
-                                Forms\Components\TextInput::make('slug')
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->unique(Category::class, 'slug', ignoreRecord: true)
-                                    ->helperText('URL-friendly name. Will be auto-generated from the name if left empty.'),
 
                                 Forms\Components\Select::make('locale')
                                     ->options([
@@ -130,7 +182,7 @@ class CategoryResource extends Resource implements HasShieldPermissions
                                     ->helperText('Custom options for this category (JSON format)')
                             ]),
                     ])
-                    ->columnSpan('full'),
+                    ->columnSpanFull()
             ]);
     }
 
@@ -195,7 +247,7 @@ class CategoryResource extends Resource implements HasShieldPermissions
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable()
-                    ->description(fn(Category $record) => $record->parent ? "Child of {$record->parent->name}" : '')
+                    ->description(fn(Category $record) => $record->parent ? "Child of : {$record->parent->name}" : '')
                     ->wrap(),
                 Tables\Columns\TextColumn::make('slug')
                     ->searchable()
@@ -219,10 +271,12 @@ class CategoryResource extends Resource implements HasShieldPermissions
                     ->sortable()
                     ->alignCenter(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->since()
+                    ->label('Created At')
+                    ->date()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Last Update')
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -251,8 +305,8 @@ class CategoryResource extends Resource implements HasShieldPermissions
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()
+                    ->modal()
                     ->hiddenLabel()
-                    ->tooltip('View')
                     ->extraModalFooterActions(
                         [
                             Tables\Actions\EditAction::make()
@@ -268,6 +322,7 @@ class CategoryResource extends Resource implements HasShieldPermissions
                             Tables\Actions\DeleteAction::make()
                                     ->label('Trash')
                                     ->cancelParentActions()
+                                    ->requiresConfirmation()
                                     ->deselectRecordsAfterCompletion(),
                             Tables\Actions\RestoreAction::make()
                                     ->color('success')
@@ -283,7 +338,7 @@ class CategoryResource extends Resource implements HasShieldPermissions
                                     'tableFilters[blog_category_id][value]' => $category->id
                                 ])),
                             ]),
-                // Tables\Actions\EditAction::make()->hiddenLabel()->tooltip('Edit')->hidden(fn(Category $category): bool => $category->trashed()),
+                // Tables\Actions\EditAction::make()->hiddenLabel()->hidden(fn(Category $category): bool => $category->trashed()),
                 Tables\Actions\Action::make('view_posts')
                     ->hiddenLabel()
                     ->tooltip('View Posts')
@@ -351,5 +406,27 @@ class CategoryResource extends Resource implements HasShieldPermissions
     public static function getNavigationGroup(): ?string
     {
         return __("menu.nav_group.blog");
+    }
+
+    // public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
+    // {
+    //     return $record->name;
+    // }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'slug'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            'Author' => $record->creator->name,
+        ];
+    }
+
+    public static function getGlobalSearchResultUrl(Model $record): string
+    {
+        return CategoryResource::getUrl('index', ['tableSearch' => $record->name]);
     }
 }

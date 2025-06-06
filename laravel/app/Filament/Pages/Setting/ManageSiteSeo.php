@@ -617,7 +617,7 @@ class ManageSiteSeo extends SettingsPage
                 ->success()
                 ->send();
 
-            $this->redirect(static::getUrl(), navigate: FilamentView::hasSpaMode() && is_app_url(static::getUrl()));
+            // $this->redirect(static::getUrl(), navigate: FilamentView::hasSpaMode() && is_app_url(static::getUrl()));
         } catch (\Throwable $th) {
             Notification::make()
                 ->title('Error saving settings')
@@ -655,6 +655,17 @@ class ManageSiteSeo extends SettingsPage
             route('filament.admin.pages.dashboard') => 'Dashboard',
             route('filament.admin.pages.manage-site-seo') => 'Settings',
             null => 'SEO Settings',
+        ];
+    }
+
+    public function getFormActions(): array
+    {
+        return [
+            // ...parent::getFormActions(),
+            parent::getSaveFormAction()
+                ->label('Save Changes')
+                ->color('success')
+                ->icon('heroicon-o-check-circle'),
         ];
     }
 }

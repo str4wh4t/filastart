@@ -69,16 +69,25 @@ class Category extends Model
         parent::boot();
 
         // Auto-generate slug from name
-        static::creating(function ($category) {
+        static::creating(function (Category $category) {
             if (empty($category->slug)) {
                 $category->slug = Str::slug($category->name);
             }
         });
 
-        static::updating(function ($category) {
-            if ($category->isDirty('name') && !$category->isDirty('slug')) {
-                $category->slug = Str::slug($category->name);
+        static::updating(function (Category $category) {
+            // if ($category->isDirty('name') && !$category->isDirty('slug')) {
+            //     $category->slug = Str::slug($category->name);
+            // }
+        });
+
+        static::deleting(function (Category $category) {
+            // Set semua post yang berkaitan menjadi tidak berkategori
+            if (! $category->isForceDeleting()) {
+                $category->is_active = false; // Set kategori sebagai tidak aktif
+                $category->saveQuietly(); // hindari loop event
             }
+            $category->banners()->update(['banner_category_id' => null]);
         });
     }
 

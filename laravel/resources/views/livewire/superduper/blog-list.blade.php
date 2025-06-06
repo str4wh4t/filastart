@@ -329,7 +329,7 @@
                                 @foreach($categories as $category)
                                     <li class="border-b border-color-black/10 pb-[14px] pt-[14px] first:pt-0 last:border-b-0 last:pb-0">
                                         <button wire:click="filterByCategory('{{ $category->id }}')" class="w-full text-left {{ $activeCategory === $category->id ? 'text-primary-600 font-semibold' : 'hover:text-primary-600' }}">
-                                            {{ $category->name }} ({{ $category->posts_count }})
+                                            {{ $category->name }} ({{ $category->posts_count ?? 0 }})
                                         </button>
                                     </li>
                                 @endforeach

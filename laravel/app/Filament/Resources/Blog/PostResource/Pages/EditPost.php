@@ -272,12 +272,10 @@ class EditPost extends EditRecord
     {
         return [
             // ...parent::getFormActions(),
-            Actions\Action::make('save')
-                ->label('Save')
+            parent::getSaveFormAction()
+                ->label('Save Changes')
                 ->color('success')
-                ->icon('heroicon-o-check-circle')
-                ->keyBindings(['mod+s'])
-                ->submit('save'),
+                ->icon('heroicon-o-check-circle'),
             Actions\Action::make('create')
                 ->label('Create Another')
                 ->color('primary')

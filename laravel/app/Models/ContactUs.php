@@ -50,6 +50,8 @@ class ContactUs extends Model
         'replied_at' => 'datetime',
     ];
 
+    protected $appends = ['name'];
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -77,12 +79,8 @@ class ContactUs extends Model
         return $this->belongsTo(User::class, 'replied_by_user_id');
     }
 
-    /**
-     * Get the full name.
-     *
-     * @return string
-     */
-    public function getNameAttribute(): string
+    // Define an accessor for the 'name' attribute
+    public function getNameAttribute()
     {
         return "{$this->firstname} {$this->lastname}";
     }

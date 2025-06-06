@@ -24,6 +24,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
@@ -34,15 +35,18 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->spa()
+            ->spaUrlExceptions(fn (): array => [
+                // url('/admin/manage-site-script'),
+            ])
             ->id('admin')
             ->path('admin')
             ->login(Login::class)
             ->passwordReset(RequestPasswordReset::class)
             ->emailVerification(EmailVerification::class)
-            ->favicon(fn(GeneralSettings $settings) => Storage::url($settings->site_favicon))
+            ->favicon(fn(GeneralSettings $settings) => empty($settings->site_favicon) ? 'https://placehold.co/50.jpeg?text=No\nImage' : Storage::url($settings->site_favicon))
             ->brandName(fn(GeneralSettings $settings) => $settings->brand_name)
-            ->brandLogo(fn(GeneralSettings $settings) => Storage::url($settings->brand_logo))
-            ->brandLogoHeight(fn(GeneralSettings $settings) => $settings->brand_logoHeight)
+            ->brandLogo(fn(GeneralSettings $settings) => empty($settings->brand_logo) ? 'https://placehold.co/240x50.jpeg?text=No%20Image' : Storage::url($settings->brand_logo))
+            ->brandLogoHeight(fn(GeneralSettings $settings) => $settings->brand_logoHeight . 'px')
             ->colors(fn(GeneralSettings $settings) => $settings->site_theme)
             ->databaseNotifications()->databaseNotificationsPolling('30s')
             ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
@@ -106,6 +110,8 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->plugins([
+                \CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin::make(),
+                // \pxlrbt\FilamentSpotlight\SpotlightPlugin::make(),
                 \TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin::make()
                     ->allowSubFolders(),
                 \BezhanSalleh\FilamentExceptions\FilamentExceptionsPlugin::make(),
@@ -152,16 +158,19 @@ class AdminPanelProvider extends PanelProvider
                                 'Contact Us' => url('/contact-us'),
                             ])
                             ->description('Default menus')
-                            ->collapsed(true)
-                            ->collapsible(true)
-                            ->paginate(perPage: 5, condition: true)
                             ]),
                 \DiogoGPinto\AuthUIEnhancer\AuthUIEnhancerPlugin::make()
                     ->showEmptyPanelOnMobile(false)
                     ->formPanelPosition('right')
                     ->formPanelWidth('40%')
                     ->emptyPanelBackgroundImageOpacity('80%')
-                    ->emptyPanelBackgroundImageUrl(asset('storage/3/patung_ikan_marlin_fpik.jpeg')),
+                    ->emptyPanelBackgroundImageUrl(
+                        Schema::hasTable('settings')?
+                            (empty(app(GeneralSettings::class)->login_cover_image)? 
+                                'https://placehold.co/1620x1080.jpeg'
+                                : Storage::url(app(GeneralSettings::class)->login_cover_image))
+                            : 'https://placehold.co/1620x1080.jpeg'
+                    ),
             ]);
     }
 }

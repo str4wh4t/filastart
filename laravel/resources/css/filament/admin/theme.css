@@ -18,7 +18,7 @@
 
 /* AUTH */
 .fi-logo {
-    @apply !h-10;
+    /* @apply !h-10; */
 }
 
 /* SIDEBAR */
@@ -30,15 +30,19 @@
     @apply gap-y-4;
 }
 
-.fi-sidebar-header {
-    @apply py-2 !ring-0 bg-gray-50 dark:!bg-gray-950 !shadow-none;
-}
+/* header.fi-sidebar-header {
+    @apply !ring-0 py-2 !border-none bg-white dark:bg-gray-950 !shadow-none;
+} */
+
+/* .fi-sidebar-header {
+    @apply py-2 !ring-0 bg-gray-50 dark:!bg-gray-950 !shadow-none min-h-16;
+} */
 
 .fi-sidebar-group > .fi-sidebar-group-items { @apply gap-y-2; }
 
-.fi-topbar nav {
-    @apply !ring-0 py-2 !border-none bg-gray-50 dark:bg-gray-950 !shadow-none;
-}
+/* .fi-topbar nav {
+    @apply !ring-0 py-2 !border-none bg-white dark:bg-gray-950 !shadow-none;
+} */
 
 /* SIDEBAR ITEM */
 .fi-sidebar-item a {
@@ -113,8 +117,20 @@
 .fi-btn.fi-btn-ring-golden {
     @apply ring-amber-500;
 }
+.fi-no.items-center .fi-no-notification-title, .fi-no.items-center .fi-no-notification-body {
+    @apply text-center;
+}
+.fi-no.items-center .fi-no-notification-actions {
+    @apply place-content-center;
+}
 .fi-no-notification{
-    @apply ring-amber-500 dark:ring-amber-500;
+    @apply bg-yellow-100 text-gray-950 ring-4 ring-amber-500 dark:ring-amber-500 dark:bg-yellow-100 dark:text-gray-950;
+}
+.fi-no-notification-title {
+    @apply text-gray-950 dark:text-gray-950;
+}
+.fi-ta-text p.text-sm {
+    @apply text-gray-400 dark:text-gray-400;
 }
 /* .fi-icon-btn.fi-color-gray {
     @apply dark:text-gray-400;
@@ -149,5 +165,5 @@
 }
 
 #impersonate-banner {
-    @apply z-40 !important;
+    @apply !z-40;
 }

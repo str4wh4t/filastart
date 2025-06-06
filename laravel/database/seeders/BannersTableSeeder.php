@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Faker\Factory as Faker;
@@ -14,12 +15,37 @@ class BannersTableSeeder extends Seeder
     {
         $faker = Faker::create();
 
+        // Get admin users for creator/updater fields
+        $adminIds = User::whereHas('roles', function ($query) {
+            $query->where('name', '=', 'admin');
+        })->pluck('id')->toArray();
+
+        // If no admins found, fallback to any users
+        if (empty($adminIds)) {
+            $adminIds = User::pluck('id')->toArray();
+        }
+
+        if (empty($adminIds)) {
+            // Create a default user if none exists
+            $userId = (string) new Ulid();
+            User::create([
+                'id' => $userId,
+                'firstname' => 'System',
+                'lastname' => 'Admin',
+                'email' => 'admin@example.com',
+                'password' => bcrypt('password'),
+            ]);
+            $adminIds = [$userId];
+        }
+
         // Create parent categories
         $parentCategoryIds = [];
         for ($i = 0; $i < 5; $i++) {
             $name = $faker->words(3, true);
             $id = (string) new Ulid();
             $parentCategoryIds[] = $id;
+            $creatorId = $faker->randomElement($adminIds);
+            $updaterId = $faker->boolean(30) ? $faker->randomElement($adminIds) : $creatorId;
 
             DB::table('banner_categories')->insert([
                 'id' => $id,
@@ -31,6 +57,8 @@ class BannersTableSeeder extends Seeder
                 'meta_description' => $faker->sentence(10),
                 'locale' => $faker->randomElement(['en', 'id', 'zh', 'ja']),
                 'options' => json_encode(['position' => $faker->randomElement(['top', 'side', 'bottom'])]),
+                'created_by' => $creatorId,
+                'updated_by' => $updaterId,
                 'created_at' => $faker->dateTimeThisYear(),
                 'updated_at' => $faker->dateTimeThisYear()
             ]);
@@ -42,6 +70,8 @@ class BannersTableSeeder extends Seeder
             $name = $faker->words(3, true);
             $id = (string) new Ulid();
             $allCategoryIds[] = $id;
+            $creatorId = $faker->randomElement($adminIds);
+            $updaterId = $faker->boolean(30) ? $faker->randomElement($adminIds) : $creatorId;
 
             DB::table('banner_categories')->insert([
                 'id' => $id,
@@ -54,6 +84,8 @@ class BannersTableSeeder extends Seeder
                 'meta_description' => $faker->sentence(10),
                 'locale' => $faker->randomElement(['en', 'id', 'zh', 'ja']),
                 'options' => json_encode(['position' => $faker->randomElement(['top', 'side', 'bottom'])]),
+                'created_by' => $creatorId,
+                'updated_by' => $updaterId,
                 'created_at' => $faker->dateTimeThisYear(),
                 'updated_at' => $faker->dateTimeThisYear()
             ]);
@@ -63,6 +95,8 @@ class BannersTableSeeder extends Seeder
         for ($i = 0; $i < 20; $i++) {
             $startDate = $faker->dateTimeBetween('-1 month', '+1 month');
             $endDate = $faker->dateTimeBetween($startDate, '+3 months');
+            $creatorId = $faker->randomElement($adminIds);
+            $updaterId = $faker->boolean(30) ? $faker->randomElement($adminIds) : $creatorId;
 
             DB::table('banner_contents')->insert([
                 'id' => (string) new Ulid(),
@@ -84,6 +118,8 @@ class BannersTableSeeder extends Seeder
                 ]),
                 'impression_count' => $faker->numberBetween(100, 10000),
                 'click_count' => $faker->numberBetween(10, 1000),
+                'created_by' => $creatorId,
+                'updated_by' => $updaterId,
                 'created_at' => $faker->dateTimeThisYear(),
                 'updated_at' => $faker->dateTimeThisYear(),
             ]);

@@ -73,6 +73,22 @@ class Content extends Model implements HasMedia
     ];
 
     /**
+     * Boot function from Laravel.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function (Content $content) {
+            // Set semua post yang berkaitan menjadi tidak berkategori
+            if (! $content->isForceDeleting()) {
+                $content->is_active = false; // Set kategori sebagai tidak aktif
+                $content->saveQuietly(); // hindari loop event
+            }
+        });
+    }
+
+    /**
      * Get the category that owns the banner.
      */
     public function category(): BelongsTo

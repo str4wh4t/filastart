@@ -14,16 +14,13 @@ class CreatePost extends CreateRecord
     {
         return [
             // ...parent::getFormActions(),
-            Actions\Action::make('create')
-                ->label('Create')
+            parent::getCreateFormAction()
+                ->label('Save Record')
                 ->color('success')
-                ->icon('heroicon-o-check-circle')
-                ->submit('create'),
-            Actions\Action::make('list')
+                ->icon('heroicon-o-check-circle'),
+            parent::getCancelFormAction()
                 ->label('Back')
-                ->color('gray')
-                ->icon('heroicon-o-chevron-left')
-                ->url(fn (): string => static::getResource()::getUrl('index')),
+                ->icon('heroicon-o-chevron-left'),
         ];
     }
 }

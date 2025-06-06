@@ -2,14 +2,20 @@
 
 namespace App\Filament\Resources\Banner\CategoryResource\RelationManagers;
 
+use App\Filament\Resources\Banner\CategoryResource;
+use App\Filament\Resources\Banner\ContentResource;
+use App\Models\Banner\Category;
 use App\Models\Banner\Content;
+use Filament\Actions\StaticAction;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
+use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 
 class BannersRelationManager extends RelationManager
 {
@@ -35,14 +41,14 @@ class BannersRelationManager extends RelationManager
                         '_blank' => 'New Window',
                     ])
                     ->default('_self'),
-                Forms\Components\Toggle::make('is_active')
-                    ->label('Active')
-                    ->default(true),
                 Forms\Components\DateTimePicker::make('start_date')
                     ->nullable(),
                 Forms\Components\DateTimePicker::make('end_date')
                     ->nullable()
                     ->after('start_date'),
+                Forms\Components\Toggle::make('is_active')
+                    ->label('Active')
+                    ->default(true),
             ]);
     }
 
@@ -51,12 +57,26 @@ class BannersRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('title')
             ->columns([
+                SpatieMediaLibraryImageColumn::make('banner')
+                    ->label('Banner')
+                    ->collection('banners')
+                    ->conversion('thumbnail')
+                    ->size(60)
+                    ->circular(false)
+                    ->alignCenter()
+                    ->defaultImageUrl('https://placehold.co/60?text=No\nImage'),
                 Tables\Columns\TextColumn::make('title')
+                    ->description(fn(Content $record): string => \Illuminate\Support\Str::limit(strip_tags($record->description), 100))
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->wrap(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->label('Active')
                     ->boolean()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('locale')
+                    ->badge()
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('start_date')
                     ->dateTime()
@@ -64,10 +84,16 @@ class BannersRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('end_date')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Created At')
+                    ->date()
                     ->sortable()
                     ->toggleable(),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Last Update')
+                    ->since()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
@@ -94,111 +120,48 @@ class BannersRelationManager extends RelationManager
                     }),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()
+                    ->label('Create Record')
+                    ->color('primary')
+                    ->icon('heroicon-o-plus-circle')
+                    ->url(fn (): string => ContentResource::getUrl('create')),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-            ])
+                Tables\Actions\EditAction::make()
+                    ->hiddenLabel()
+                    ->modal()
+                    ->modalAutofocus(false)
+                    ->modalSubmitAction(fn (StaticAction $action) => $action->label('Save Changes')
+                        ->color('success')
+                        ->icon('heroicon-o-check-circle'))
+                    ->extraModalFooterActions(
+                        [
+                            Tables\Actions\Action::make('open_full_edit')
+                                ->label('Open Full Edit')
+                                ->color('primary')
+                                ->icon('heroicon-o-arrow-top-right-on-square')
+                                ->url(fn (Content $content): string => ContentResource::getUrl('edit', ['record' => $content])),
+                        ]
+                    ),
+                Tables\Actions\DeleteAction::make()->hiddenLabel(),
+            ], position: ActionsPosition::BeforeCells)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()->label('Trash selected'),
                     Tables\Actions\BulkAction::make('activate')
                         ->label('Set Active')
                         ->icon('heroicon-m-check-circle')
-                        ->action(fn(\Illuminate\Database\Eloquent\Collection $records) => $records->each->update(['is_active' => true])),
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->action(fn(\Illuminate\Database\Eloquent\Collection $records) => $records->each->update(['is_active' => true]))
+                        ->visible(fn ($livewire): bool => !$livewire->isReadOnly()),
                     Tables\Actions\BulkAction::make('deactivate')
                         ->label('Set Inactive')
                         ->icon('heroicon-m-x-circle')
-                        ->action(fn(\Illuminate\Database\Eloquent\Collection $records) => $records->each->update(['is_active' => false])),
-                ]),
-            ]);
-    }
-}
-
-class ChildrenRelationManager extends RelationManager
-{
-    protected static string $relationship = 'children';
-
-    public function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255)
-                    ->live(onBlur: true)
-                    ->afterStateUpdated(fn(string $operation, $state, Forms\Set $set) =>
-                        $operation === 'create' ? $set('slug', Str::slug($state)) : null),
-                Forms\Components\TextInput::make('slug')
-                    ->required()
-                    ->maxLength(255)
-                    ->unique(ignoreRecord: true),
-                Forms\Components\Select::make('locale')
-                    ->options([
-                        'en' => 'English',
-                        'id' => 'Indonesian',
-                        'zh' => 'Chinese',
-                        'ja' => 'Japanese',
-                    ])
-                    ->default('en')
-                    ->required(),
-                Forms\Components\MarkdownEditor::make('description')
-                    ->columnSpan('full'),
-                Forms\Components\Toggle::make('is_active')
-                    ->label('Active')
-                    ->default(true),
-            ]);
-    }
-
-    public function table(Table $table): Table
-    {
-        return $table
-            ->recordTitleAttribute('name')
-            ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('slug')
-                    ->searchable()
-                    ->toggleable(),
-                Tables\Columns\IconColumn::make('is_active')
-                    ->label('Active')
-                    ->boolean()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('locale')
-                    ->badge()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('banners_count')
-                    ->label('Banners')
-                    ->counts('banners')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(),
-            ])
-            ->filters([
-                Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Active Status'),
-                Tables\Filters\SelectFilter::make('locale')
-                    ->options([
-                        'en' => 'English',
-                        'id' => 'Indonesian',
-                        'zh' => 'Chinese',
-                        'ja' => 'Japanese',
-                    ]),
-            ])
-            ->headerActions([
-                Tables\Actions\CreateAction::make(),
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->action(fn(\Illuminate\Database\Eloquent\Collection $records) => $records->each->update(['is_active' => false]))
+                        ->visible(fn ($livewire): bool => !$livewire->isReadOnly()),
                 ]),
             ]);
     }

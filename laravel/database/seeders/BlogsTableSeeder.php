@@ -60,6 +60,8 @@ class BlogsTableSeeder extends Seeder
         foreach (range(1, 4) as $index) {
             $name = ucwords($faker->words(2, true));
             $creatorId = $faker->randomElement($adminIds);
+            $updaterId = $faker->boolean(30) ? $faker->randomElement($adminIds) : $creatorId;
+
             $parentCategories[] = [
                 'id' => (string) new Ulid(),
                 'name' => $name,
@@ -71,7 +73,7 @@ class BlogsTableSeeder extends Seeder
                 'locale' => 'en',
                 'options' => json_encode(['order' => $index]),
                 'created_by' => $creatorId,
-                'updated_by' => $creatorId,
+                'updated_by' => $updaterId,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];

@@ -95,7 +95,7 @@ class ContentPolicy
      */
     public function replicate(User $user, Content $content): bool
     {
-        return $user->can('replicate_banner::content');
+        return $user->can('{{ Replicate }}');
     }
 
     /**

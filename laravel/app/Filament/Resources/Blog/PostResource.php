@@ -38,17 +38,16 @@ use Illuminate\Support\Facades\Auth;
 use FilamentTiptapEditor\TiptapEditor;
 use FilamentTiptapEditor\Enums\TiptapOutput;
 use Illuminate\Contracts\Pagination\CursorPaginator;
-use Livewire;
+use Schmeits\FilamentCharacterCounter\Forms\Components\Textarea;
 
 class PostResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Post::class;
 
-    protected static ?string $recordTitleAttribute = 'title';
-
+    protected static ?int $navigationSort = -2;
     protected static ?string $navigationIcon = 'fluentui-news-20';
 
-    protected static ?int $navigationSort = -2;
+    protected static ?string $recordTitleAttribute = 'title';
 
     public static function getPermissionPrefixes(): array
     {
@@ -93,9 +92,10 @@ class PostResource extends Resource implements HasShieldPermissions
                                     ->helperText('URL-friendly version of the title - generated automatically')
                                     ->suffixAction(
                                         Forms\Components\Actions\Action::make('editSlug')
+                                            ->modal()
                                             ->icon('heroicon-o-pencil-square')
                                             ->modalHeading('Edit Slug')
-                                            ->modalDescription('Customize the URL slug for this post. Use lowercase letters, numbers, and hyphens only.')
+                                            ->modalDescription('Customize the URL slug for this Post. Use lowercase letters, numbers, and hyphens only.')
                                             ->modalIcon('heroicon-o-link')
                                             ->modalSubmitActionLabel('Update Slug')
                                             ->form([
@@ -137,7 +137,7 @@ class PostResource extends Resource implements HasShieldPermissions
                                             ->hidden(fn(string $operation): bool => $operation === 'view')
                                     ),
 
-                                Forms\Components\Textarea::make('content_overview')
+                                Textarea::make('content_overview')
                                     ->required()
                                     ->placeholder('Provide a brief summary or excerpt of this post')
                                     ->helperText('This will appear on the blog listing page')
@@ -200,9 +200,9 @@ class PostResource extends Resource implements HasShieldPermissions
                             ->description('Visual elements for your post')
                             ->icon('heroicon-o-photo')
                             ->schema([
-                                SpatieMediaLibraryFileUpload::make('featured')
+                                SpatieMediaLibraryFileUpload::make('featured_image')
                                     ->label('Featured Image')
-                                    ->collection('featured')
+                                    ->collection('featured_images')
                                     ->image()
                                     ->imageResizeMode('contain')
                                     ->imageCropAspectRatio('16:9')
@@ -276,7 +276,63 @@ class PostResource extends Resource implements HasShieldPermissions
                                     ->preload()
                                     ->createOptionForm([
                                         Forms\Components\TextInput::make('name')
-                                            ->required(),
+                                            ->required()
+                                            ->maxLength(255)
+                                            ->live(onBlur: true)
+                                            ->afterStateUpdated(fn($state, Forms\Set $set) => $set('slug', Str::slug($state))),
+                                        Forms\Components\TextInput::make('slug')
+                                            ->disabled()
+                                            ->dehydrated()
+                                            ->required()
+                                            ->maxLength(255)
+                                            ->unique(Category::class, 'slug', ignoreRecord: true)
+                                            ->helperText('URL-friendly version of the title - generated automatically')
+                                            ->suffixAction(
+                                                Forms\Components\Actions\Action::make('editSlug')
+                                                    ->modal()
+                                                    ->icon('heroicon-o-pencil-square')
+                                                    ->modalHeading('Edit Slug')
+                                                    ->modalDescription('Customize the URL slug for this Category. Use lowercase letters, numbers, and hyphens only.')
+                                                    ->modalIcon('heroicon-o-link')
+                                                    ->modalSubmitActionLabel('Update Slug')
+                                                    ->form([
+                                                        Forms\Components\TextInput::make('new_slug')
+                                                            ->hiddenLabel()
+                                                            ->required()
+                                                            ->maxLength(255)
+                                                            // ->live(debounce: 500)
+                                                            // ->afterStateUpdated(function (string $state, Forms\Set $set) {
+                                                            //     $set('new_slug', Str::slug($state));
+                                                            // })
+                                                            ->unique(Category::class, 'slug', ignoreRecord: true)
+                                                            ->helperText('The slug will be automatically formatted as you type.')
+                                                    ])
+                                                    ->fillForm(fn (Get $get): array => [
+                                                        'new_slug' => $get('slug'),
+                                                    ])
+                                                    ->action(function (Forms\Components\Actions\Action $action, array $data, Set $set) {
+                                                        // Validate the new slug
+                                                        if (empty($data['new_slug']) || !preg_match('/^[a-z0-9-]+$/', $data['new_slug'])) {
+                                                            Notification::make()
+                                                                ->title('Slug Update Failed')
+                                                                ->body('The slug must contain only lowercase letters, numbers, and hyphens.')
+                                                                ->danger()
+                                                                ->send();
+
+                                                            $action->halt();
+                                                            
+                                                        }
+                                                        $set('slug', $data['new_slug']);
+
+                                                        // Notification::make()
+                                                        //     ->title('Slug updated')
+                                                        //     ->success()
+                                                        //     ->send();
+                                                    })
+                                            ),
+                                        // Forms\Components\Toggle::make('is_active')
+                                        //     ->label('Active')
+                                        //     ->default(true),
                                     ])
                                     ->required(),
 
@@ -409,11 +465,23 @@ class PostResource extends Resource implements HasShieldPermissions
                 //    ->label('Image')
                 //    ->collection('featured')
                 //    ->defaultImageUrl(fn(Post $record) => $record->getFeaturedImageUrl('thumbnail') ?? 'https://placehold.co/150x150/webp'),
+                SpatieMediaLibraryImageColumn::make('featured_image')
+                    ->label('Image')
+                    ->collection('featured_images')
+                    ->conversion('thumbnail')
+                    ->size(60)
+                    ->circular(false)
+                    ->alignCenter()
+                    ->defaultImageUrl('https://placehold.co/60?text=No\nImage'),
 
                 Tables\Columns\TextColumn::make('title')
+                    ->description(fn(Post $record): string => Str::limit(strip_tags($record->content_overview), 200))
                     ->searchable()
                     ->sortable()
-                    ->limit(30),
+                    ->wrap()
+                    ->extraHeaderAttributes([
+                        'class' => 'min-w-80'
+                    ]),
 
                 Tables\Columns\IconColumn::make('is_featured')
                     ->label('Featured')
@@ -453,12 +521,13 @@ class PostResource extends Resource implements HasShieldPermissions
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Created At')
+                    ->date()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->label('Last Update')
+                    ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
@@ -502,6 +571,7 @@ class PostResource extends Resource implements HasShieldPermissions
             ->actions([
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make()
+                        ->modal()
                         ->extraModalFooterActions(
                             [
                                 Tables\Actions\EditAction::make()
@@ -518,13 +588,7 @@ class PostResource extends Resource implements HasShieldPermissions
                                 Tables\Actions\DeleteAction::make()
                                     ->label('Trash')
                                     ->cancelParentActions()
-                                    ->deselectRecordsAfterCompletion()
-                                    ->before(function (Post $post) {
-                                        if ($post->status === 'published') {
-                                            $post->status = 'draft';
-                                            $post->save();
-                                        }
-                                    }),
+                                    ->deselectRecordsAfterCompletion(),
                                 Tables\Actions\RestoreAction::make()
                                     ->color('success')
                                     ->cancelParentActions()
@@ -656,32 +720,42 @@ class PostResource extends Resource implements HasShieldPermissions
         return 'gray';
     }
 
-    public static function getGlobalSearchResultTitle(Model $record): string
+    // public static function getEloquentQuery(): Builder
+    // {
+    //     $query = parent::getEloquentQuery()
+    //         ->withoutGlobalScopes([
+    //             SoftDeletingScope::class,
+    //         ]);
+
+    //     // $user = Auth::user();
+    //     // return $user->hasRole(config('filament-shield.super_admin.name'))
+    //     //     ? $query
+    //     //     : $query->where('created_by', $user->id);
+
+    //     return $query;
+    // }
+
+    // public static function getGlobalSearchResultTitle(Model $record): string
+    // {
+    //     return $record->title;
+    // }
+
+    public static function getGloballySearchableAttributes(): array
     {
-        return $record->title;
+        return ['title', 'slug'];
     }
 
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
-            'Category' => $record->category->name,
-            'Author' => "{$record->author->firstname} {$record->author->lastname}",
+            // 'Category' => $record->category->name,
+            'Author' => $record->author->name,
             'Status' => $record->published_at?->isPast() ? 'Published' : 'Draft',
         ];
     }
 
-    public static function getEloquentQuery(): Builder
+    public static function getGlobalSearchResultUrl(Model $record): string
     {
-        $query = parent::getEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
-
-        // $user = Auth::user();
-        // return $user->hasRole(config('filament-shield.super_admin.name'))
-        //     ? $query
-        //     : $query->where('created_by', $user->id);
-
-        return $query;
+        return PostResource::getUrl('index', ['tableSearch' => $record->title]);
     }
 }

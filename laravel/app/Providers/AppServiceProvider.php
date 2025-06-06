@@ -11,6 +11,9 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 use Opcodes\LogViewer\Facades\LogViewer;
+use Filament\Livewire\Notifications;
+use Filament\Support\Enums\Alignment;
+use Filament\Support\Enums\VerticalAlignment;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -37,16 +40,10 @@ class AppServiceProvider extends ServiceProvider
             $table
                 ->emptyStateHeading('No data yet')
                 ->defaultPaginationPageOption(10)
-                ->paginated([10, 25, 50, 100, 'all'])
+                ->paginated([10, 20, 50, 100, 'all'])
                 ->extremePaginationLinks()
                 ->defaultSort('created_at', 'desc');
         });
-
-        // # \Opcodes\LogViewer
-        // LogViewer::auth(function ($request) {
-        //     $role = auth()?->user()?->roles?->first()->name;
-        //     return $role == config('filament-shield.super_admin.name');
-        // });
 
         // # \Opcodes\LogViewer
         LogViewer::auth(function ($request) {
@@ -65,5 +62,8 @@ class AppServiceProvider extends ServiceProvider
             PanelsRenderHook::USER_MENU_BEFORE,
             fn (): View => view('filament.components.button-website'),
         );
+
+        Notifications::alignment(Alignment::Center);
+        Notifications::verticalAlignment(VerticalAlignment::Start);
     }
 }

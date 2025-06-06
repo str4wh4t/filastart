@@ -12,6 +12,7 @@ use Filament\Pages\SettingsPage;
 use Filament\Support\Facades\FilamentView;
 use Illuminate\Contracts\Support\Htmlable;
 use Riodwanto\FilamentAceEditor\AceEditor;
+use Filament\Notifications\Actions\Action;
 
 use function Filament\Support\is_app_url;
 
@@ -98,7 +99,7 @@ class ManageGeneral extends SettingsPage
                                 ->visibility('public')
                                 ->moveFiles()
                                 ->imagePreviewHeight('100')
-                                ->helperText('Upload your site logo (optional)'),
+                                ->helperText('Upload your site logo, Recommended size: 240x50 pixels'),
 
                             Forms\Components\FileUpload::make('site_favicon')
                                 ->label(fn() => __('page.general_settings.fields.site_favicon'))
@@ -108,6 +109,18 @@ class ManageGeneral extends SettingsPage
                                 ->moveFiles()
                                 ->acceptedFileTypes(['image/x-icon', 'image/vnd.microsoft.icon', 'image/png', 'image/jpeg'])
                                 ->helperText('Supports .ico, .png, and .jpg formats (optional)'),
+
+                            Forms\Components\FileUpload::make('login_cover_image')
+                                ->label(fn() => __('page.general_settings.fields.login_cover_image'))
+                                ->acceptedFileTypes([
+                                    'image/jpeg',
+                                    'image/jpg',
+                                ])
+                                ->directory('sites')
+                                ->visibility('public')
+                                ->moveFiles()
+                                ->imagePreviewHeight('100')
+                                ->helperText('Upload your site logo .jpeg and .jpg, Recommended size: 1620x1080 pixels'),
                         ])->columns(2)->columnSpan(3),
                     ])->columns(3),
 
@@ -148,22 +161,22 @@ class ManageGeneral extends SettingsPage
                                             ->helperText('Used for warnings and cautions'),
                                     ])->columns(2),
                             ]),
-                        Forms\Components\Tabs\Tab::make('Code Editor')
-                            ->icon('heroicon-o-code-bracket')
-                            ->schema([
-                                Forms\Components\Grid::make()->schema([
-                                    AceEditor::make('theme-editor')
-                                        ->label('theme.css')
-                                        ->mode('css')
-                                        ->height('24rem')
-                                        ->helperText('Edit the CSS theme directly (changes will be applied after saving)'),
-                                    AceEditor::make('tw-config-editor')
-                                        ->label('tailwind.config.js')
-                                        ->mode('javascript')
-                                        ->height('24rem')
-                                        ->helperText('Edit the Tailwind configuration (changes will be applied after saving)'),
-                                ])->columns(1)
-                            ]),
+                        // Forms\Components\Tabs\Tab::make('Code Editor')
+                        //     ->icon('heroicon-o-code-bracket')
+                        //     ->schema([
+                        //         Forms\Components\Grid::make()->schema([
+                        //             AceEditor::make('theme-editor')
+                        //                 ->label('theme.css')
+                        //                 ->mode('css')
+                        //                 ->height('24rem')
+                        //                 ->helperText('Edit the CSS theme directly (changes will be applied after saving)'),
+                        //             AceEditor::make('tw-config-editor')
+                        //                 ->label('tailwind.config.js')
+                        //                 ->mode('javascript')
+                        //                 ->height('24rem')
+                        //                 ->helperText('Edit the Tailwind configuration (changes will be applied after saving)'),
+                        //         ])->columns(1)
+                        //     ]),
                     ])
                     ->persistTabInQueryString()
                     ->columnSpanFull(),
@@ -182,17 +195,22 @@ class ManageGeneral extends SettingsPage
             $settings->fill($data);
             $settings->save();
 
-            $fileService = new FileService;
-            $fileService->writeFile($this->themePath, $data['theme-editor']);
-            $fileService->writeFile($this->twConfigPath, $data['tw-config-editor']);
+            // $fileService = new FileService;
+            // $fileService->writeFile($this->themePath, $data['theme-editor']);
+            // $fileService->writeFile($this->twConfigPath, $data['tw-config-editor']);
 
             Notification::make()
                 ->title('Settings updated successfully!')
-                ->body('Your changes have been saved.')
+                ->body('Your changes have been saved, please reload the page to apply them.')
                 ->success()
+                ->actions([
+                    Action::make('reload')
+                        ->button()
+                        ->url(static::getUrl()),
+                ])
                 ->send();
 
-            $this->redirect(static::getUrl(), navigate: FilamentView::hasSpaMode() && is_app_url(static::getUrl()));
+            // $this->redirect(static::getUrl(), navigate: FilamentView::hasSpaMode() && is_app_url(static::getUrl()));
         } catch (\Throwable $th) {
             Notification::make()
                 ->title('Error saving settings')
@@ -227,5 +245,16 @@ class ManageGeneral extends SettingsPage
     public function getSubheading(): string|Htmlable|null
     {
         return __("page.general_settings.subheading");
+    }
+
+    public function getFormActions(): array
+    {
+        return [
+            // ...parent::getFormActions(),
+            parent::getSaveFormAction()
+                ->label('Save Changes')
+                ->color('success')
+                ->icon('heroicon-o-check-circle'),
+        ];
     }
 }

@@ -143,7 +143,7 @@ class ManageSiteSocial extends SettingsPage
                 ->success()
                 ->send();
 
-            $this->redirect(static::getUrl(), navigate: FilamentView::hasSpaMode() && is_app_url(static::getUrl()));
+            // $this->redirect(static::getUrl(), navigate: FilamentView::hasSpaMode() && is_app_url(static::getUrl()));
         } catch (\Throwable $th) {
             Notification::make()
                 ->title('Error saving settings')
@@ -178,5 +178,16 @@ class ManageSiteSocial extends SettingsPage
     public function getSubheading(): string|Htmlable|null
     {
         return 'Manage your social media profiles and sharing options';
+    }
+
+    public function getFormActions(): array
+    {
+        return [
+            // ...parent::getFormActions(),
+            parent::getSaveFormAction()
+                ->label('Save Changes')
+                ->color('success')
+                ->icon('heroicon-o-check-circle'),
+        ];
     }
 }

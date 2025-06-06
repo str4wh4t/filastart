@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->string('name');
             $table->string('slug')->unique();
             $table->longText('description')->nullable();
-            $table->boolean('is_active')->default(false)->index();
+            $table->boolean('is_active')->default(true)->index();
             $table->string('meta_title')->nullable();
             $table->string('meta_description')->nullable();
             $table->string('locale', 10)->default('en')->index();

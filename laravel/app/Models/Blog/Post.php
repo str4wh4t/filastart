@@ -98,13 +98,13 @@ class Post extends Model implements HasMedia
         parent::boot();
 
         // Auto-generate slug from title
-        static::creating(function ($post) {
+        static::creating(function (Post $post) {
             if (empty($post->slug)) {
                 $post->slug = Str::slug($post->title);
             }
         });
 
-        static::updating(function ($post) {
+        static::updating(function (Post $post) {
             // if ($post->isDirty('title') && !$post->isDirty('slug')) {
             //     $post->slug = Str::slug($post->title);
             // }
@@ -240,7 +240,7 @@ class Post extends Model implements HasMedia
      */
     public function getFeaturedImageUrl(string $conversion = ''): ?string
     {
-        $media = $this->getFirstMedia('featured');
+        $media = $this->getFirstMedia('featured_images');
 
         if (!$media) {
             return null;
@@ -255,7 +255,7 @@ class Post extends Model implements HasMedia
      */
     public function hasFeaturedImage(): bool
     {
-        return $this->hasMedia('featured');
+        return $this->hasMedia('featured_images');
     }
 
     /**
@@ -263,7 +263,7 @@ class Post extends Model implements HasMedia
      */
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('featured')
+        $this->addMediaCollection('featured_images')
             ->singleFile();
 
         $this->addMediaCollection('gallery');

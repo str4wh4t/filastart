@@ -40,6 +40,7 @@ return [
             "site_active" => "Site Status",
             "brand_logoHeight" => "Brand Logo Height",
             "brand_logo" => "Brand Logo",
+            "login_cover_image" => "Login Cover Image",
             "site_favicon" => "Site Favicon",
             "primary" => "Primary",
             "secondary" => "Secondary",

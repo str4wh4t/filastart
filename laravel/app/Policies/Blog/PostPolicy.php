@@ -39,11 +39,7 @@ class PostPolicy
      */
     public function update(User $user, Post $post): bool
     {
-        if ($user->hasAnyRole(['admin', config('filament-shield.super_admin.name')])) {
-            return true;
-        }
-
-        return $user->can('update_blog::post') && $user->id === $post->creator->id;
+        return $user->can('update_blog::post');
     }
 
     /**
@@ -51,11 +47,7 @@ class PostPolicy
      */
     public function delete(User $user, Post $post): bool
     {
-        if ($user->hasAnyRole(['admin', config('filament-shield.super_admin.name')])) {
-            return true;
-        }
-
-        return $user->can('delete_blog::post') && $user->id === $post->creator->id;
+        return $user->can('delete_blog::post');
     }
 
     /**
@@ -71,11 +63,7 @@ class PostPolicy
      */
     public function forceDelete(User $user, Post $post): bool
     {
-        if ($user->hasAnyRole(['admin', config('filament-shield.super_admin.name')])) {
-            return true;
-        }
-
-        return $user->can('force_delete_blog::post') && $user->id === $post->creator->id;
+        return $user->can('force_delete_blog::post');
     }
 
     /**
@@ -91,11 +79,7 @@ class PostPolicy
      */
     public function restore(User $user, Post $post): bool
     {
-        if ($user->hasAnyRole(['admin', config('filament-shield.super_admin.name')])) {
-            return true;
-        }
-
-        return $user->can('restore_blog::post') && $user->id === $post->creator->id;
+        return $user->can('restore_blog::post');
     }
 
     /**
@@ -111,11 +95,7 @@ class PostPolicy
      */
     public function replicate(User $user, Post $post): bool
     {
-        if ($user->hasAnyRole(['admin', config('filament-shield.super_admin.name')])) {
-            return true;
-        }
-
-        return $user->can('replicate_blog::post') && $user->id === $post->creator->id;
+        return $user->can('replicate_blog::post');
     }
 
     /**

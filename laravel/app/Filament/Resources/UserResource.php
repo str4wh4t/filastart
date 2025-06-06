@@ -245,8 +245,7 @@ class UserResource extends Resource
                     ->schema([
                         Infolists\Components\TextEntry::make('roles.name')
                             ->formatStateUsing(fn($state): string => Str::headline($state))
-                            ->badge()
-                            ->formatStateUsing(fn (string $state): HtmlString => new HtmlString($state)),
+                            ->badge(),
                     ])
                     ->columns(1),
             ]);
@@ -262,7 +261,7 @@ class UserResource extends Resource
                     ->wrap()
                     ->defaultImageUrl(fn(User $record): ?string => $record->getFilamentAvatarUrl()),
                 Tables\Columns\TextColumn::make('username')->label('Username')
-                    ->description(fn(Model $record) => $record->firstname . ' ' . $record->lastname)
+                    ->description(fn(User $record) => $record->firstname . ' ' . $record->lastname)
                     ->searchable(['username', 'firstname', 'lastname']),
                 Tables\Columns\TextColumn::make('roles.name')->label('Role')
                     ->formatStateUsing(fn($state): string => Str::headline($state))
@@ -281,11 +280,15 @@ class UserResource extends Resource
                     ->dateTime('M j, Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable(),
+                    ->label('Created At')
+                    ->date()
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->label('Last Update')
+                    ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -311,8 +314,8 @@ class UserResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()
+                    ->modal()
                     ->hiddenLabel()
-                    ->tooltip('View')
                     ->extraModalFooterActions(
                         [
                             Tables\Actions\EditAction::make()
@@ -353,23 +356,6 @@ class UserResource extends Resource
         ];
     }
 
-    public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
-    {
-        return $record->email;
-    }
-
-    public static function getGloballySearchableAttributes(): array
-    {
-        return ['email', 'firstname', 'lastname'];
-    }
-
-    public static function getGlobalSearchResultDetails(Model $record): array
-    {
-        return [
-            'name' => $record->firstname . ' ' . $record->lastname,
-        ];
-    }
-
     public static function getNavigationGroup(): ?string
     {
         return __("menu.nav_group.access");
@@ -403,5 +389,36 @@ class UserResource extends Resource
                 ->warning()
                 ->send();
         }
+    }
+
+    // public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
+    // {
+    //     return $record->name . ' || ' . $record->username;
+    // }
+
+    public static function getGlobalSearchEloquentQuery(): Builder
+    {
+        return parent::getGlobalSearchEloquentQuery()
+            ->whereDoesntHave('roles', function ($query) {
+                $query->where('name', config('filament-shield.super_admin.name'));
+            });
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['username', 'email', 'firstname', 'lastname'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            'Username' => $record->username,
+            'Email' => $record->email,
+        ];
+    }
+
+    public static function getGlobalSearchResultUrl(Model $record): string
+    {
+        return UserResource::getUrl('index', ['tableSearch' => $record->name]);
     }
 }

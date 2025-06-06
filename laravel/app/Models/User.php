@@ -43,6 +43,18 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
     ];
 
     /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
+
+    protected $appends = ['name'];
+
+    /**
      * The attributes that should be hidden for serialization.
      *
      * @var array<int, string>
@@ -52,17 +64,25 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
         'remember_token',
     ];
 
-    protected $appends = ['name'];
-
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
+     * Boot function from Laravel.
      */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function (User $user) {
+            // dd($user);
+        });
+
+        static::updating(function (User $user) {
+            // dd($user);
+        });
+
+        static::deleting(function (User $user) {
+            //
+        });
+    }
 
     public function getFilamentName(): string
     {

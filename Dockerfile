@@ -13,10 +13,10 @@ RUN apt-get update && apt-get install -y \
     libicu-dev \
     libexif-dev \
     libmagickwand-dev \
-    && pecl install imagick \
+    && pecl install imagick redis \
     && docker-php-ext-install intl pdo pdo_mysql zip exif \
     && docker-php-ext-configure intl \
-    && docker-php-ext-enable imagick
+    && docker-php-ext-enable imagick redis
 
 
 # Install Composer (untuk mengelola dependensi PHP)

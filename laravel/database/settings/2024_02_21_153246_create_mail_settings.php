@@ -12,7 +12,7 @@ return new class extends SettingsMigration
         $this->migrator->add('mail.reply_to_name', 'SuperDuper Support');
 
         $this->migrator->add('mail.driver', 'smtp');
-        $this->migrator->add('mail.host', null);
+        $this->migrator->add('mail.host', 'mail.localhost.com');
         $this->migrator->add('mail.port', 587);
         $this->migrator->add('mail.encryption', 'tls');
         $this->migrator->addEncrypted('mail.username', null);

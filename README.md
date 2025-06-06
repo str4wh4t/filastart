@@ -9,3 +9,9 @@ After your container ready, you can login into your App container and prepare th
 5.  php artisan shield:generate --all
 6.  php artisan storage:link
 
+
+* TODO
+-   ~add confirmation to reload on page general~
+-   ace editor not working on spa
+-   global search not working on spa
+

@@ -28,12 +28,11 @@ class ContactUsResource extends Resource implements HasShieldPermissions
 
     protected static ?string $slug = 'contact-us/inbox';
 
-    protected static ?string $recordTitleAttribute = 'name';
-
+    protected static ?int $navigationSort = 0;
     protected static ?string $navigationIcon = 'fluentui-mail-inbox-28';
 
-    protected static ?int $navigationSort = 0;
-
+    protected static ?string $recordTitleAttribute = 'name';
+    
     public static function getPermissionPrefixes(): array
     {
         return [
@@ -355,8 +354,26 @@ class ContactUsResource extends Resource implements HasShieldPermissions
             ]);
     }
 
-    public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
+    // public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
+    // {
+    //     return $record->name;
+    // }
+
+    public static function getGloballySearchableAttributes(): array
     {
-        return $record->name;
+        return ['email', 'firstname', 'lastname'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            'Email' => $record->email,
+            'Status' => $record->status,
+        ];
+    }
+
+    public static function getGlobalSearchResultUrl(Model $record): string
+    {
+        return ContactUsResource::getUrl('index', ['tableSearch' => $record->name]);
     }
 }
