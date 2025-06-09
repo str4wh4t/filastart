@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 
 class Unit extends Model
 {
@@ -46,6 +47,15 @@ class Unit extends Model
 
         static::deleting(function (Unit $unit) {
             //
+            // DB::transaction(function () use ($unit) {
+            //     $relatedScopes = \App\Models\RoleHasScope::where('scope_type', Unit::class)
+            //         ->where('scope_id', $unit->id)
+            //         ->exists();
+
+            //     if ($relatedScopes) {
+            //         throw new \Exception("Tidak dapat menghapus unit karena masih ada data yang terkait pada unit ini.");
+            //     }
+            // });
         });
     }
 
