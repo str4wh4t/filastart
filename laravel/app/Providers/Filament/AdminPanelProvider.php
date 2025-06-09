@@ -6,6 +6,7 @@ use App\Filament\Pages\Auth\EmailVerification;
 use App\Filament\Pages\Auth\Login;
 use App\Filament\Pages\Auth\RequestPasswordReset;
 use App\Filament\Resources\MenuResource;
+use App\Http\Middleware\EnsureActiveRole;
 use App\Http\Middleware\FilamentRobotsMiddleware;
 use App\Livewire\MyProfileExtended;
 use App\Settings\GeneralSettings;
@@ -34,6 +35,7 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
+            // ->unsavedChangesAlerts()
             ->spa()
             ->spaUrlExceptions(fn (): array => [
                 // url('/admin/manage-site-script'),
@@ -104,13 +106,14 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-                FilamentRobotsMiddleware::class
+                FilamentRobotsMiddleware::class,
+                EnsureActiveRole::class
             ])
             ->authMiddleware([
                 Authenticate::class,
             ])
             ->plugins([
-                \CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin::make(),
+                // \CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin::make(),
                 // \pxlrbt\FilamentSpotlight\SpotlightPlugin::make(),
                 \TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin::make()
                     ->allowSubFolders(),

@@ -728,7 +728,7 @@ class PostResource extends Resource implements HasShieldPermissions
     //         ]);
 
     //     // $user = Auth::user();
-    //     // return $user->hasRole(config('filament-shield.super_admin.name'))
+    //     // return $user->isSuperAdmin()
     //     //     ? $query
     //     //     : $query->where('created_by', $user->id);
 

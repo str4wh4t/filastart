@@ -25,7 +25,7 @@ class EmailVerification extends EmailVerificationPrompt
         return Action::make('resendNotification')
             ->link()
             ->label(__('filament-panels::pages/auth/email-verification/email-verification-prompt.actions.resend_notification.label') . '.')
-            ->action(function (MailSettings $settings = null): void {
+            ->action(function (?MailSettings $settings = null): void {
                 try {
                     $this->rateLimit(2);
                 } catch (TooManyRequestsException $exception) {
@@ -44,6 +44,7 @@ class EmailVerification extends EmailVerificationPrompt
                     return;
                 }
 
+                /** @var \App\Models\User $user */
                 $user = Filament::auth()->user();
 
                 if (! method_exists($user, 'notify')) {

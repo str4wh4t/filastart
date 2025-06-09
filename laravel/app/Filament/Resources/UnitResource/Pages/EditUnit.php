@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\UnitResource\Pages;
 
 use App\Filament\Resources\UnitResource;
+use App\Models\Unit;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use Livewire\Attributes\Url;
@@ -41,7 +42,24 @@ class EditUnit extends EditRecord
                 ->icon('heroicon-o-chevron-left')
                 // ->alpineClickHandler('document.referrer ? window.history.back() : (window.location.href = ' . \Illuminate\Support\Js::from($this->previousUrl ?? static::getResource()::getUrl('index')) . ')'),
                 ->url(fn (): string => static::getResource()::getUrl('index', ['page' => $this->page, 'activeTab' => $this->activeTab, 'tableFilters' => $this->tableFilters, 'tableSearch' => $this->tableSearch])),
-            Actions\DeleteAction::make()->label('Trash')->icon('heroicon-o-trash'),
+            Actions\DeleteAction::make()
+                ->label('Trash')
+                ->icon('heroicon-o-trash')
+                ->before(function (Unit $unit) {
+                    $relatedScopes = \App\Models\RoleHasScope::where('scope_type', Unit::class)
+                        ->where('scope_id', $unit->id)
+                        ->exists();
+
+                    if ($relatedScopes) {
+                        \Filament\Notifications\Notification::make()
+                            ->warning()
+                            ->title('Cannot Delete Unit')
+                            ->body('This unit cannot be deleted because it is has associated data.')
+                            ->send();
+                    
+                        $this->halt();
+                    }
+                }),  
         ];
     }
 

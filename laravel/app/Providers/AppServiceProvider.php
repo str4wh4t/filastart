@@ -14,6 +14,7 @@ use Opcodes\LogViewer\Facades\LogViewer;
 use Filament\Livewire\Notifications;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Enums\VerticalAlignment;
+use Illuminate\Support\Facades\Blade;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -58,9 +59,14 @@ class AppServiceProvider extends ServiceProvider
             PanelsRenderHook::FOOTER,
             fn (): View => view('filament.components.panel-footer'),
         );
+        // FilamentView::registerRenderHook(
+        //     PanelsRenderHook::USER_MENU_BEFORE,
+        //     fn (): View => view('filament.components.button-website'),
+        // );
+
         FilamentView::registerRenderHook(
             PanelsRenderHook::USER_MENU_BEFORE,
-            fn (): View => view('filament.components.button-website'),
+            fn (): string => Blade::render('@livewire(\'button-role\')'),
         );
 
         Notifications::alignment(Alignment::Center);

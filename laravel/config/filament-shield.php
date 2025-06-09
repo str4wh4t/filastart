@@ -65,6 +65,7 @@ return [
 
         'pages' => [
             'Dashboard',
+            'RoleSwitcher',
         ],
 
         'widgets' => [

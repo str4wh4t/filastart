@@ -8,6 +8,13 @@ export default {
         "./vendor/filament/**/*.blade.php",
         "./vendor/diogogpinto/filament-auth-ui-enhancer/resources/**/*.blade.php",
         "./vendor/awcodes/filament-tiptap-editor/resources/**/*.blade.php",
+        "./vendor/jaocero/radio-deck/resources/views/**/*.blade.php",
+        "./vendor/codewithdennis/filament-simple-alert/resources/**/*.blade.php",
+    ],
+    safelist: [
+        'animate-spin',
+        'animate-pulse',
+        'animate-bounce'
     ],
     theme: {
         extend: {

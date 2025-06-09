@@ -329,8 +329,23 @@ class UserResource extends Resource
                                         ]))
                                 ->visible(fn(User $user): bool => !$user->trashed()),
                             Tables\Actions\DeleteAction::make(),
+                            Impersonate::make()
+                                ->button()
+                                ->requiresConfirmation()
+                                ->color('gray')
+                                ->extraAttributes(['class' => 'fi-btn-ring-golden']),
                         ]),
-                Impersonate::make()->requiresConfirmation()->color('gray')
+                Tables\Actions\EditAction::make()
+                    ->hiddenLabel()
+                    ->url(fn(User $user, $livewire): string => 
+                        UserResource::getUrl('edit', [
+                            'record' => $user, 
+                            'page' => $livewire->getPage(),
+                            'activeTab' => $livewire->activeTab,
+                            'tableFilters' => $livewire->tableFilters,
+                            'tableSearch' => $livewire->tableSearch
+                        ])),
+                // Impersonate::make()->requiresConfirmation()->color('gray')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

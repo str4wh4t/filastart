@@ -167,3 +167,10 @@
 #impersonate-banner {
     @apply !z-40;
 }
+
+.fi-fo-toggle-buttons.role-to-approve label{
+    @apply ring-amber-500;
+}
+.filament-simple-alert {
+    @apply ring-custom-500/70;
+}

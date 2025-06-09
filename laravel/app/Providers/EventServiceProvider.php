@@ -22,6 +22,12 @@ class EventServiceProvider extends ServiceProvider
         ContactUsCreated::class => [
             SendNewContactNotification::class,
         ],
+        \Lab404\Impersonate\Events\TakeImpersonation::class => [
+            \App\Listeners\ClearSessionBeforeImpersonate::class,
+        ],
+        \Lab404\Impersonate\Events\LeaveImpersonation::class => [
+            \App\Listeners\RestoreSessionAfterImpersonate::class,
+        ]
     ];
 
     /**
