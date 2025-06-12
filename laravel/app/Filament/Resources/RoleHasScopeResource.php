@@ -18,12 +18,12 @@ use Illuminate\Support\Facades\Schema;
 
 class RoleHasScopeResource extends Resource
 {
+    // protected static boo $shouldRegisterNavigation = false; // hide from sidebar
     protected static ?string $model = RoleHasScope::class;
 
-    protected static ?string $navigationGroup = 'Organization';
+    protected static ?int $navigationSort = 2;
+    protected static ?string $navigationIcon = 'fluentui-shield-lock-20-o';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?int $navigationSort = 1;
     protected static ?string $navigationLabel = 'Role Scopes';
     protected static ?string $pluralModelLabel = 'Role Scopes';
     protected static ?string $label = 'Role Scope';
@@ -186,5 +186,10 @@ class RoleHasScopeResource extends Resource
             'create' => Pages\CreateRoleHasScope::route('/create'),
             'edit' => Pages\EditRoleHasScope::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __("menu.nav_group.access");
     }
 }

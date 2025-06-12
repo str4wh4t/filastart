@@ -22,7 +22,7 @@ return new class extends SettingsMigration
 
         $this->migrator->add('mail.template_theme', 'default');
         $this->migrator->add('mail.footer_text', '© ' . date('Y') . ' SuperDuper Starter. All rights reserved.');
-        $this->migrator->add('mail.logo_path', 'sites/email-logo.png');
+        $this->migrator->add('mail.logo_path', null);
         $this->migrator->add('mail.primary_color', '#2D2B8D');
         $this->migrator->add('mail.secondary_color', '#FFC903');
 

@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('banner_contents', function (Blueprint $table) {
             $table->ulid('id')->primary();
             $table->foreignUlid('banner_category_id')->nullable()->index()->nullOnDelete();
-            $table->unsignedSmallInteger('sort')->default(1)->index();
+            $table->unsignedInteger('sort')->default(1)->index();
             $table->boolean('is_active')->default(false)->index();
 
             $table->string('title', 255)->nullable()->index();

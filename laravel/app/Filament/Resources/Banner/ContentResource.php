@@ -24,6 +24,7 @@ use Filament\Tables\Enums\ActionsPosition;
 
 class ContentResource extends Resource implements HasShieldPermissions
 {
+    protected static bool $shouldRegisterNavigation = false; // hide from sidebar
     protected static ?string $model = Content::class;
 
     protected static ?string $slug = 'banner/contents';
@@ -31,7 +32,7 @@ class ContentResource extends Resource implements HasShieldPermissions
     protected static int $globalSearchResultsLimit = 10;
     
     protected static ?int $navigationSort = -2;
-    protected static ?string $navigationIcon = 'heroicon-o-photo';
+    protected static ?string $navigationIcon = 'heroicon-o-photo-o';
     
     protected static ?string $recordTitleAttribute = 'title';
 

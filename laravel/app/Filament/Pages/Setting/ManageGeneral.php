@@ -22,7 +22,7 @@ class ManageGeneral extends SettingsPage
     protected static string $settings = GeneralSettings::class;
 
     protected static ?int $navigationSort = 99;
-    protected static ?string $navigationIcon = 'fluentui-settings-20';
+    protected static ?string $navigationIcon = 'fluentui-settings-20-o';
 
     /**
      * @var array<string, mixed> | null
@@ -88,7 +88,8 @@ class ManageGeneral extends SettingsPage
                                 ->label(fn() => __('page.general_settings.fields.brand_logoHeight'))
                                 ->numeric()
                                 ->suffix('px')
-                                ->required(),
+                                ->required()
+                                ->helperText('Best size is 50px'),
                         ])->columnSpan(3),
 
                         Forms\Components\Grid::make()->schema([

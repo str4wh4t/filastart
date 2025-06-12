@@ -18,6 +18,7 @@ use function Filament\Support\is_app_url;
 class ManageSiteScript extends SettingsPage
 {
     use HasPageShield;
+    protected static bool $shouldRegisterNavigation = false; // hide from sidebar
     protected static string $settings = SiteScriptSettings::class;
 
     protected static ?int $navigationSort = 3;

@@ -24,6 +24,9 @@ class RoleResource extends Resource implements HasShieldPermissions
     protected static ?string $recordTitleAttribute = 'name';
     protected static $permissionsCollection;
 
+    protected static ?int $navigationSort = 1;
+    protected static ?string $navigationIcon = 'fluentui-shield-keyhole-20-o';
+
     public static function getPermissionPrefixes(): array
     {
         return [
@@ -184,15 +187,15 @@ class RoleResource extends Resource implements HasShieldPermissions
         return __('filament-shield::filament-shield.nav.role.label');
     }
 
-    public static function getNavigationIcon(): string
-    {
-        return 'fluentui-shield-task-48';
-    }
+    // public static function getNavigationIcon(): string
+    // {
+    //     return 'fluentui-shield-task-48';
+    // }
 
-    public static function getNavigationSort(): ?int
-    {
-        return Utils::getResourceNavigationSort();
-    }
+    // public static function getNavigationSort(): ?int
+    // {
+    //     return Utils::getResourceNavigationSort();
+    // }
 
     public static function getSlug(): string
     {

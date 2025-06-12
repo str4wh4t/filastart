@@ -29,7 +29,7 @@ class CategoryResource extends Resource implements HasShieldPermissions
     protected static ?string $slug = 'blog/categories';
     
     protected static ?int $navigationSort = -1;
-    protected static ?string $navigationIcon = 'fluentui-stack-20';
+    protected static ?string $navigationIcon = 'fluentui-stack-20-o';
     
     protected static ?string $recordTitleAttribute = 'name';
 

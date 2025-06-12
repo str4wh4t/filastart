@@ -69,6 +69,11 @@ class AppServiceProvider extends ServiceProvider
             fn (): string => Blade::render('@livewire(\'button-role\')'),
         );
 
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::AUTH_LOGIN_FORM_AFTER,
+            fn (): View => view('filament.components.button-frontpage'),
+        );
+
         Notifications::alignment(Alignment::Center);
         Notifications::verticalAlignment(VerticalAlignment::Start);
     }

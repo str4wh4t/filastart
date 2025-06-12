@@ -45,7 +45,7 @@ class PostResource extends Resource implements HasShieldPermissions
     protected static ?string $model = Post::class;
 
     protected static ?int $navigationSort = -2;
-    protected static ?string $navigationIcon = 'fluentui-news-20';
+    protected static ?string $navigationIcon = 'fluentui-news-20-o';
 
     protected static ?string $recordTitleAttribute = 'title';
 

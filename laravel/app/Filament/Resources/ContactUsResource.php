@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Auth;
 
 class ContactUsResource extends Resource implements HasShieldPermissions
 {
+    protected static bool $shouldRegisterNavigation = false; // hide from sidebar
     protected static ?string $model = ContactUs::class;
 
     protected static ?string $slug = 'contact-us/inbox';

@@ -75,7 +75,7 @@ class ManageSite extends SettingsPage
                             ->visibility('public')
                             ->imagePreviewHeight('100')
                             ->maxSize(1024)
-                            ->helperText('Recommended size: 240x50 pixels'),
+                            ->helperText('Recommended size: 295x75 pixels'),
                     ]),
 
                 Forms\Components\Section::make('Company Information')

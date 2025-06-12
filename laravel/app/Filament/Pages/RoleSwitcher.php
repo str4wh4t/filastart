@@ -9,7 +9,9 @@ use Illuminate\Support\HtmlString;
 
 class RoleSwitcher extends Page
 {
+    protected static bool $shouldRegisterNavigation = false; // hide from sidebar
     protected static ?string $navigationIcon = 'fluentui-person-tag-20-o';
+
 
     protected static string $view = 'filament.pages.role-switcher';
 

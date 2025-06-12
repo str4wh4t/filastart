@@ -23,6 +23,7 @@ use function Filament\Support\is_app_url;
 class ManageSiteSeo extends SettingsPage
 {
     use HasPageShield;
+    protected static bool $shouldRegisterNavigation = false; // hide from sidebar
     protected static string $settings = SiteSeoSettings::class;
 
     protected static ?int $navigationSort = 2;

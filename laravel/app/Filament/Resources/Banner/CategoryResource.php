@@ -24,13 +24,13 @@ use Schmeits\FilamentCharacterCounter\Forms\Components\Textarea;
 
 class CategoryResource extends Resource implements HasShieldPermissions
 {
+    protected static bool $shouldRegisterNavigation = false; // hide from sidebar
     protected static ?string $model = Category::class;
 
-    
     protected static ?string $slug = 'banner/categories';
     
     protected static ?int $navigationSort = -1;
-    protected static ?string $navigationIcon = 'fluentui-stack-20';
+    protected static ?string $navigationIcon = 'fluentui-stack-20-o';
     protected static ?string $navigationLabel = 'Categories';
     
     protected static ?string $recordTitleAttribute = 'name';

@@ -8,7 +8,7 @@ return new class extends SettingsMigration
     {
         $this->migrator->add('sites.is_maintenance', false);
         $this->migrator->add('sites.name', 'SuperDuper Filament Starter');
-        $this->migrator->add('sites.logo', 'sites/logo.png');
+        $this->migrator->add('sites.logo', null);
         $this->migrator->add('sites.tagline', 'Elevate Your Development Experience');
         $this->migrator->add('sites.description', "Transform your workflow with SuperDuper Filament Starter — the toolkit for Filament 3 projects. Packed with enterprise-ready plugins, seamless configurations, and expert-crafted interfaces to accelerate your development from concept to production.");
         $this->migrator->add('sites.default_language', 'en');

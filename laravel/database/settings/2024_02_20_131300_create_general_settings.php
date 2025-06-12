@@ -15,7 +15,7 @@ return new class extends SettingsMigration
         $this->migrator->add('general.site_theme', [
             "primary" => "#134bf5",
             "secondary" => "#00dbd1",
-            "gray" => "#363636",
+            "gray" => "#636363",
             "success" => "#22b800",
             "danger" => "#ff5467",
             "info" => "#bb42d9",

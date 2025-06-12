@@ -19,6 +19,7 @@ use Illuminate\Validation\Rules\Unique;
 
 class UnitResource extends Resource
 {
+    protected static bool $shouldRegisterNavigation = false; // hide from sidebar
     protected static ?string $model = Unit::class;
 
     protected static ?string $navigationGroup = 'Organization';
