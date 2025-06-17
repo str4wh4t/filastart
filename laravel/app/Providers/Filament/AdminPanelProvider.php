@@ -56,10 +56,14 @@ class AdminPanelProvider extends PanelProvider
             ->navigationGroups([
                 Navigation\NavigationGroup::make()
                     ->label(__('menu.nav_group.content'))
-                    ->collapsible(false),
+                    // ->collapsible(false),
+                    ->collapsible(),
+                Navigation\NavigationGroup::make()
+                    ->label(__('menu.nav_group.blog'))
+                    ->collapsible(),    
                 Navigation\NavigationGroup::make()
                     ->label(__('menu.nav_group.access'))
-                    ->collapsible(false),
+                    ->collapsible(),
                 Navigation\NavigationGroup::make()
                     ->label(__('menu.nav_group.sites'))
                     ->collapsed(),
@@ -90,11 +94,11 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                \App\Filament\Pages\Dashboard::class
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                Widgets\FilamentInfoWidget::class,
+                // Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -107,7 +111,7 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
                 FilamentRobotsMiddleware::class,
-                EnsureActiveRole::class
+                // EnsureActiveRole::class
             ])
             ->authMiddleware([
                 Authenticate::class,
@@ -115,8 +119,9 @@ class AdminPanelProvider extends PanelProvider
             ->plugins([
                 // \CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin::make(),
                 // \pxlrbt\FilamentSpotlight\SpotlightPlugin::make(),
-                \TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin::make()
-                    ->allowSubFolders(),
+                // \TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin::make()
+                //     ->allowSubFolders()
+                //     ->allowUserAccess(),
                 \BezhanSalleh\FilamentExceptions\FilamentExceptionsPlugin::make(),
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
                     ->gridColumns([

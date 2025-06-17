@@ -50,6 +50,7 @@ class EditContent extends EditRecord
                 ->label('Create Another')
                 ->color('primary')
                 ->icon('heroicon-o-plus-circle')
+                ->authorize('create', static::getModel())
                 ->url(fn (): string => static::getResource()::getUrl('create')),
             Actions\Action::make('list')
                 ->label('Back')

@@ -208,7 +208,7 @@ class PostResource extends Resource implements HasShieldPermissions
                                     ->imageCropAspectRatio('16:9')
                                     ->imageResizeTargetWidth('1200')
                                     ->imageResizeTargetHeight('675')
-                                    ->helperText('This image will be displayed prominently in post listings and social shares (16:9 ratio recommended)')
+                                    ->helperText('This image will be displayed in post listings and social shares (16:9 ratio or 1280x720 recommended)')
                                     ->downloadable()
                                     ->responsiveImages(),
                             ]),

@@ -11,7 +11,7 @@ return new class extends SettingsMigration
         $this->migrator->add('general.brand_logoHeight', '50');
         $this->migrator->add('general.site_favicon', null);
         $this->migrator->add('general.login_cover_image', null);
-        $this->migrator->add('general.search_engine_indexing', false);
+        $this->migrator->add('general.search_engine_indexing', true);
         $this->migrator->add('general.site_theme', [
             "primary" => "#134bf5",
             "secondary" => "#00dbd1",

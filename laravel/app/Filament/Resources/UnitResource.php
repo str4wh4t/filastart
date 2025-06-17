@@ -3,19 +3,14 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UnitResource\Pages;
-use App\Filament\Resources\UnitResource\RelationManagers;
 use App\Models\Unit;
 use Closure;
-use Dom\Text;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Unique;
 
 class UnitResource extends Resource
 {

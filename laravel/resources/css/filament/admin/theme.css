@@ -174,3 +174,6 @@
 .filament-simple-alert {
     @apply ring-custom-500/70;
 }
+.fi-logo{
+    @apply bg-green-800;
+}

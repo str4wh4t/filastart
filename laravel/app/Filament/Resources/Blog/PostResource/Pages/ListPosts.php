@@ -30,17 +30,17 @@ class ListPosts extends ListRecords
         ];
     }
 
-    protected function getHeaderWidgets(): array
-    {
-        return [
-            BlogPostStatsWidget::class,
-        ];
-    }
+    // protected function getHeaderWidgets(): array
+    // {
+    //     return [
+    //         BlogPostStatsWidget::class,
+    //     ];
+    // }
 
-    protected function getFooterWidgets(): array
-    {
-        return [];
-    }
+    // protected function getFooterWidgets(): array
+    // {
+    //     return [];
+    // }
 
     public function getTabs(): array
     {

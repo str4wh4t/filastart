@@ -280,6 +280,7 @@ class EditPost extends EditRecord
                 ->label('Create Another')
                 ->color('primary')
                 ->icon('heroicon-o-plus-circle')
+                ->authorize('create', static::getModel())
                 ->url(fn (): string => static::getResource()::getUrl('create')),
             Actions\Action::make('list')
                 ->label('Back')
@@ -355,13 +356,13 @@ class EditPost extends EditRecord
                             ->title('Post replicated')
                             ->body('The post has been replicated successfully.'),
                 ),
-            Actions\Action::make('view_on_site')
-                ->color('warning')
-                ->label('Show Live Post')
-                ->url(fn () => $this->record->getUrl())
-                ->icon('heroicon-o-globe-alt')
-                ->openUrlInNewTab()
-                ->visible(fn () => $this->record->is_published),
+            // Actions\Action::make('view_on_site')
+            //     ->color('warning')
+            //     ->label('Show Live Post')
+            //     ->url(fn () => $this->record->getUrl())
+            //     ->icon('heroicon-o-globe-alt')
+            //     ->openUrlInNewTab()
+            //     ->visible(fn () => $this->record->is_published),
         ];
     }
 

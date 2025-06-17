@@ -39,7 +39,7 @@ class AppServiceProvider extends ServiceProvider
 
         Table::configureUsing(function (Table $table): void {
             $table
-                ->emptyStateHeading('No data yet')
+                ->emptyStateHeading('Empty Data')
                 ->defaultPaginationPageOption(10)
                 ->paginated([10, 20, 50, 100, 'all'])
                 ->extremePaginationLinks()

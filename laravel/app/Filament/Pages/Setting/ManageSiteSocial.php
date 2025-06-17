@@ -53,75 +53,68 @@ class ManageSiteSocial extends SettingsPage
                             Forms\Components\TextInput::make('facebook_url')
                                 ->label('Facebook URL')
                                 ->url()
-                                ->prefix('https://')
-                                ->helperText('e.g., facebook.com/yourpage'),
+                                ->helperText('e.g., https://facebook.com/yourpage'),
                             Forms\Components\TextInput::make('twitter_url')
                                 ->label('Twitter/X URL')
                                 ->url()
-                                ->prefix('https://')
-                                ->helperText('e.g., twitter.com/yourusername'),
+                                ->helperText('e.g., https://twitter.com/yourusername'),
                             Forms\Components\TextInput::make('instagram_url')
                                 ->label('Instagram URL')
                                 ->url()
-                                ->prefix('https://')
-                                ->helperText('e.g., instagram.com/yourusername'),
+                                ->helperText('e.g., https://instagram.com/yourusername'),
                             Forms\Components\TextInput::make('linkedin_url')
                                 ->label('LinkedIn URL')
                                 ->url()
-                                ->prefix('https://')
-                                ->helperText('e.g., linkedin.com/company/yourcompany'),
+                                ->helperText('e.g., https://linkedin.com/company/yourcompany'),
                             Forms\Components\TextInput::make('youtube_url')
                                 ->label('YouTube URL')
                                 ->url()
-                                ->prefix('https://')
-                                ->helperText('e.g., youtube.com/channel/your-channel'),
+                                ->helperText('e.g., https://youtube.com/channel/your-channel'),
                             Forms\Components\TextInput::make('pinterest_url')
                                 ->label('Pinterest URL')
                                 ->url()
-                                ->prefix('https://')
-                                ->helperText('e.g., pinterest.com/yourusername'),
+                                ->helperText('e.g., https://pinterest.com/yourusername'),
                             Forms\Components\TextInput::make('tiktok_url')
                                 ->label('TikTok URL')
                                 ->url()
-                                ->prefix('https://')
-                                ->helperText('e.g., tiktok.com/@yourusername'),
+                                ->helperText('e.g., https://tiktok.com/@yourusername'),
                         ])->columns(2),
                     ]),
 
-                Forms\Components\Section::make('Social Sharing')
-                    ->description('Configure social sharing options')
-                    ->icon('heroicon-o-share')
-                    ->collapsible()
-                    ->schema([
-                        Forms\Components\Grid::make()->schema([
-                            Forms\Components\Toggle::make('social_share_enabled')
-                                ->label('Enable Social Sharing Buttons')
-                                ->required(),
-                            Forms\Components\CheckboxList::make('social_share_platforms')
-                                ->label('Platforms to Include')
-                                ->options([
-                                    'facebook' => 'Facebook',
-                                    'twitter' => 'Twitter/X',
-                                    'linkedin' => 'LinkedIn',
-                                    'pinterest' => 'Pinterest',
-                                    'reddit' => 'Reddit',
-                                    'whatsapp' => 'WhatsApp',
-                                    'telegram' => 'Telegram',
-                                    'email' => 'Email',
-                                ])
-                                ->columns(2)
-                                ->required()
-                                ->helperText('Select which platforms to include in your sharing buttons'),
-                        ])->columns(2),
+                // Forms\Components\Section::make('Social Sharing')
+                //     ->description('Configure social sharing options')
+                //     ->icon('heroicon-o-share')
+                //     ->collapsible()
+                //     ->schema([
+                //         Forms\Components\Grid::make()->schema([
+                //             Forms\Components\Toggle::make('social_share_enabled')
+                //                 ->label('Enable Social Sharing Buttons')
+                //                 ->required(),
+                //             Forms\Components\CheckboxList::make('social_share_platforms')
+                //                 ->label('Platforms to Include')
+                //                 ->options([
+                //                     'facebook' => 'Facebook',
+                //                     'twitter' => 'Twitter/X',
+                //                     'linkedin' => 'LinkedIn',
+                //                     'pinterest' => 'Pinterest',
+                //                     'reddit' => 'Reddit',
+                //                     'whatsapp' => 'WhatsApp',
+                //                     'telegram' => 'Telegram',
+                //                     'email' => 'Email',
+                //                 ])
+                //                 ->columns(2)
+                //                 ->required()
+                //                 ->helperText('Select which platforms to include in your sharing buttons'),
+                //         ])->columns(2),
 
-                        Forms\Components\FileUpload::make('social_share_default_image')
-                            ->label('Default Share Image')
-                            ->image()
-                            ->directory('sites')
-                            ->visibility('public')
-                            ->imagePreviewHeight('100')
-                            ->helperText('This image will be used when sharing pages that don\'t have a specific image set. Recommended size: 1200x630 pixels'),
-                    ]),
+                //         Forms\Components\FileUpload::make('social_share_default_image')
+                //             ->label('Default Share Image')
+                //             ->image()
+                //             ->directory('sites')
+                //             ->visibility('public')
+                //             ->imagePreviewHeight('100')
+                //             ->helperText('This image will be used when sharing pages that don\'t have a specific image set. Recommended size: 1200x630 pixels'),
+                //     ]),
             ])
             ->columns(3)
             ->statePath('data');

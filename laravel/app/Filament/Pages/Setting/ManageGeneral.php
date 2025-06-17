@@ -71,8 +71,8 @@ class ManageGeneral extends SettingsPage
                                 ->label(fn() => __('page.general_settings.fields.brand_name'))
                                 ->required(),
                             Forms\Components\Toggle::make('search_engine_indexing')
-                                ->label('Admin Panel Indexing')
-                                ->helperText('When disabled, search engines will be instructed not to index the admin panel')
+                                ->label('Search Engine Indexing')
+                                ->helperText('When disabled, search engines will be instructed not to index the site')
                                 ->default(true),
                         ]),
                     ]),

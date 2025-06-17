@@ -157,3 +157,55 @@
     @apply col-span-6;
 }
 
+.post-content{
+    @apply mt-6;
+}
+
+.post-content p{
+    @apply mb-3;
+}
+
+.post-content h1 {
+    @apply text-2xl font-bold mb-2 mt-4;
+}
+
+.post-content h2 {
+    @apply text-xl font-bold mb-2 mt-4;
+}
+
+.post-content h3 {
+    @apply text-lg font-bold mb-2 mt-4;
+}
+
+.post-content h4 {
+    @apply text-lg font-bold mb-2 mt-4;
+}
+
+.post-content h5 {
+    @apply text-lg font-bold mb-2 mt-4;
+}
+
+.post-content h6 {
+    @apply text-lg font-bold mb-2 mt-4;
+}
+
+.post-content ul {
+    @apply list-disc ml-8 mb-3;
+}
+
+.post-content ol {
+    @apply list-decimal mb-3;
+}
+
+.post-content ul p{
+    @apply mb-1;
+}
+
+.post-content ol p{
+    @apply mb-1;
+}
+
+.post-content blockquote {
+    @apply border-l-4 border-blue-400 bg-blue-50 p-4 italic rounded-md mb-3;
+}
+

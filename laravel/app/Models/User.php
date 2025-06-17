@@ -19,6 +19,7 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Permission\Traits\HasRoles;
+use TomatoPHP\FilamentMediaManager\Traits\InteractsWithMediaFolders;
 
 /**
  * @mixin IdeHelperUser
@@ -28,6 +29,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
     use InteractsWithMedia;
     use HasUuids, HasRoles, SoftDeletes;
     use HasApiTokens, HasFactory, Notifiable;
+    use InteractsWithMediaFolders;
 
     /**
      * The attributes that are mass assignable.
@@ -139,5 +141,48 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
     {
         return $this->isSuperAdmin()
             || $this->hasRole('admin');
+    }
+
+    public function hasScope(): bool
+    {
+        return \App\Models\RoleHasScope::whereHas('modelRole', function ($query) {
+                $query->where('model_type', self::class)
+                    ->where('model_id', $this->id);
+            })->exists();
+    }
+
+    public function hasScopeToModel(string $modelClass): bool
+    {
+        return \App\Models\RoleHasScope::whereHas('modelRole', function ($query) {
+                $query->where('model_type', self::class)
+                    ->where('model_id', $this->id);
+            })->where('scope_type', $modelClass)
+            ->exists();
+    }
+
+    public function hasScopeTo(string $modelClass, int|string|array $scopeId): bool
+    {
+        return RoleHasScope::whereHas('modelRole', function ($query) {
+                $query->where('model_type', self::class)
+                    ->where('model_id', $this->id);
+            })
+            ->where('scope_type', $modelClass)
+            ->when(is_array($scopeId), function ($query) use ($scopeId) {
+                return $query->whereIn('scope_id', $scopeId);
+            }, function ($query) use ($scopeId) {
+                return $query->where('scope_id', $scopeId);
+            })
+            ->exists();
+    }
+
+    public function getScopeIds(string $modelClass): array
+    {
+        return \App\Models\RoleHasScope::whereHas('modelRole', function ($query) {
+                $query->where('model_type', self::class)
+                    ->where('model_id', $this->id);
+            })
+            ->where('scope_type', $modelClass)
+            ->pluck('scope_id')
+            ->toArray();
     }
 }

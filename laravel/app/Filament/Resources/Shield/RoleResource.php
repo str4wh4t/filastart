@@ -25,7 +25,7 @@ class RoleResource extends Resource implements HasShieldPermissions
     protected static $permissionsCollection;
 
     protected static ?int $navigationSort = 1;
-    protected static ?string $navigationIcon = 'fluentui-shield-keyhole-20-o';
+    protected static ?string $navigationIcon = 'fluentui-shield-keyhole-24-o';
 
     public static function getPermissionPrefixes(): array
     {

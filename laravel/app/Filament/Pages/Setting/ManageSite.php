@@ -114,6 +114,7 @@ class ManageSite extends SettingsPage
                                 ->label('Default Language')
                                 ->options([
                                     'en' => 'English',
+                                    'id' => 'Bahasa Indonesia',
                                     'fr' => 'French',
                                     'es' => 'Spanish',
                                     'de' => 'German',
