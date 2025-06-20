@@ -22,7 +22,7 @@ class SuperadminSeeder extends Seeder
             'lastname' => 'Admin',
             'email' => 'superadmin@starter-kit.com',
             'email_verified_at' => now(),
-            'password' => Hash::make('superadmin'),
+            'password' => Hash::make(env('DEFAULT_USER_PASSWORD', '12345678')),
             'created_at' => now(),
             'updated_at' => now(),
         ]);

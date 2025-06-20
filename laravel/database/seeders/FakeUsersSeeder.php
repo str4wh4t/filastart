@@ -25,7 +25,7 @@ class FakeUsersSeeder extends Seeder
                     'lastname' => $faker->lastName,
                     'email' => $faker->unique()->safeEmail,
                     'email_verified_at' => now(),
-                    'password' => Hash::make('password'),
+                    'password' => Hash::make(env('DEFAULT_USER_PASSWORD', '12345678')),
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
