@@ -7,6 +7,7 @@ use Datlechin\FilamentMenuBuilder\Resources\MenuResource as BaseMenuResource;
 
 class MenuResource extends BaseMenuResource implements HasShieldPermissions
 {
+    protected static bool $shouldRegisterNavigation = false; // hide from sidebar
     protected static ?int $navigationSort = 0;
 
     protected static ?string $navigationIcon = 'fluentui-navigation-16';

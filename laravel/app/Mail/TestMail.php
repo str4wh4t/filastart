@@ -32,7 +32,7 @@ class TestMail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         $envelope = new Envelope(
-            subject: $this->mailData['title'] ?? 'Test Email from SuperDuper Filament Starter',
+            subject: $this->mailData['title'] ?? 'Test Email from ZZuper Starter',
         );
 
         // Add reply-to address if specified in settings
@@ -57,9 +57,6 @@ class TestMail extends Mailable implements ShouldQueue
             view: 'emails.test',
             with: [
                 'mailData' => $this->mailData,
-                'theme' => $this->mailData['theme'] ?? null,
-                'preheader' => 'This is a test email to verify your email configuration is working properly.',
-                'footerText' => $this->mailData['theme']['footer'] ?? ('© ' . date('Y') . ' SuperDuper Starter. All rights reserved.'),
                 'displayDate' => now()->format('F j, Y'),
             ],
         );
@@ -75,7 +72,7 @@ class TestMail extends Mailable implements ShouldQueue
         // Include a sample attachment only if specifically requested in mail data
         if (isset($this->mailData['include_sample_attachment']) && $this->mailData['include_sample_attachment']) {
             return [
-                Attachment::fromData(fn () => 'This is a test attachment content', 'test-attachment.txt')
+                Attachment::fromData(fn() => 'This is a test attachment content', 'test-attachment.txt')
                     ->withMime('text/plain'),
             ];
         }

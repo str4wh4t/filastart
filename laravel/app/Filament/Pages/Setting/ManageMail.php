@@ -64,7 +64,7 @@ class ManageMail extends SettingsPage
                                             ->icon('fluentui-server-20-o')
                                             ->schema([
                                                 Forms\Components\Select::make('driver')
-                                                    ->label(fn () => __('page.mail_settings.fields.driver'))
+                                                    ->label(fn() => __('page.mail_settings.fields.driver'))
                                                     ->options([
                                                         "smtp" => "SMTP (Standard Email Server) - Recommended",
                                                         "mailgun" => "Mailgun API Service - Untested",
@@ -77,37 +77,37 @@ class ManageMail extends SettingsPage
                                                     ->required()
                                                     ->columnSpan(2),
                                                 Forms\Components\TextInput::make('host')
-                                                    ->label(fn () => __('page.mail_settings.fields.host'))
+                                                    ->label(fn() => __('page.mail_settings.fields.host'))
                                                     ->required()
-                                                    ->visible(fn (callable $get) => $get('driver') === 'smtp'),
+                                                    ->visible(fn(callable $get) => $get('driver') === 'smtp'),
                                                 Forms\Components\TextInput::make('port')
-                                                    ->label(fn () => __('page.mail_settings.fields.port'))
+                                                    ->label(fn() => __('page.mail_settings.fields.port'))
                                                     ->numeric()
-                                                    ->visible(fn (callable $get) => $get('driver') === 'smtp'),
+                                                    ->visible(fn(callable $get) => $get('driver') === 'smtp'),
                                                 Forms\Components\Select::make('encryption')
-                                                    ->label(fn () => __('page.mail_settings.fields.encryption'))
+                                                    ->label(fn() => __('page.mail_settings.fields.encryption'))
                                                     ->options([
                                                         "ssl" => "SSL",
                                                         "tls" => "TLS",
                                                     ])
                                                     ->native(false)
-                                                    ->visible(fn (callable $get) => $get('driver') === 'smtp'),
+                                                    ->visible(fn(callable $get) => $get('driver') === 'smtp'),
                                                 Forms\Components\TextInput::make('timeout')
-                                                    ->label(fn () => __('page.mail_settings.fields.timeout'))
+                                                    ->label(fn() => __('page.mail_settings.fields.timeout'))
                                                     ->numeric()
-                                                    ->visible(fn (callable $get) => $get('driver') === 'smtp'),
+                                                    ->visible(fn(callable $get) => $get('driver') === 'smtp'),
                                                 Forms\Components\TextInput::make('username')
-                                                    ->label(fn () => __('page.mail_settings.fields.username'))
-                                                    ->visible(fn (callable $get) => $get('driver') === 'smtp'),
+                                                    ->label(fn() => __('page.mail_settings.fields.username'))
+                                                    ->visible(fn(callable $get) => $get('driver') === 'smtp'),
                                                 Forms\Components\TextInput::make('password')
-                                                    ->label(fn () => __('page.mail_settings.fields.password'))
+                                                    ->label(fn() => __('page.mail_settings.fields.password'))
                                                     ->password()
                                                     ->revealable()
-                                                    ->visible(fn (callable $get) => $get('driver') === 'smtp'),
+                                                    ->visible(fn(callable $get) => $get('driver') === 'smtp'),
                                                 Forms\Components\TextInput::make('local_domain')
                                                     ->label('Local Domain')
                                                     ->helperText('Optional domain name to use in SMTP HELO command')
-                                                    ->visible(fn (callable $get) => $get('driver') === 'smtp'),
+                                                    ->visible(fn(callable $get) => $get('driver') === 'smtp'),
                                             ])
                                             ->columns(3)
                                             ->columnSpan(2),
@@ -118,28 +118,28 @@ class ManageMail extends SettingsPage
                                             ->schema([
                                                 Forms\Components\Placeholder::make('provider_instructions')
                                                     ->content('Please select a mail driver to configure provider-specific settings.')
-                                                    ->visible(fn (callable $get) => $get('driver') === 'smtp' || $get('driver') === null),
+                                                    ->visible(fn(callable $get) => $get('driver') === 'smtp' || $get('driver') === null),
 
                                                 // Mailgun
                                                 Forms\Components\Group::make()
                                                     ->schema([
                                                         Forms\Components\TextInput::make('providers.mailgun.domain')
                                                             ->label('Mailgun Domain')
-                                                            ->required(fn (callable $get) => $get('driver') === 'mailgun')
+                                                            ->required(fn(callable $get) => $get('driver') === 'mailgun')
                                                             ->columnSpan(2),
                                                         Forms\Components\TextInput::make('providers.mailgun.secret')
                                                             ->label('Mailgun Secret')
                                                             ->password()
                                                             ->revealable()
-                                                            ->required(fn (callable $get) => $get('driver') === 'mailgun')
+                                                            ->required(fn(callable $get) => $get('driver') === 'mailgun')
                                                             ->columnSpan(2),
                                                         Forms\Components\TextInput::make('providers.mailgun.endpoint')
                                                             ->label('Mailgun Endpoint')
                                                             ->default('api.mailgun.net')
-                                                            ->required(fn (callable $get) => $get('driver') === 'mailgun')
+                                                            ->required(fn(callable $get) => $get('driver') === 'mailgun')
                                                             ->columnSpan(2),
                                                     ])
-                                                    ->visible(fn (callable $get) => $get('driver') === 'mailgun')
+                                                    ->visible(fn(callable $get) => $get('driver') === 'mailgun')
                                                     ->columns(2),
 
                                                 // Postmark
@@ -149,21 +149,21 @@ class ManageMail extends SettingsPage
                                                             ->label('Postmark Token')
                                                             ->password()
                                                             ->revealable()
-                                                            ->required(fn (callable $get) => $get('driver') === 'postmark'),
+                                                            ->required(fn(callable $get) => $get('driver') === 'postmark'),
                                                     ])
-                                                    ->visible(fn (callable $get) => $get('driver') === 'postmark'),
+                                                    ->visible(fn(callable $get) => $get('driver') === 'postmark'),
 
                                                 // Amazon SES
                                                 Forms\Components\Group::make()
                                                     ->schema([
                                                         Forms\Components\TextInput::make('providers.ses.key')
                                                             ->label('AWS Access Key')
-                                                            ->required(fn (callable $get) => $get('driver') === 'ses'),
+                                                            ->required(fn(callable $get) => $get('driver') === 'ses'),
                                                         Forms\Components\TextInput::make('providers.ses.secret')
                                                             ->label('AWS Secret Key')
                                                             ->password()
                                                             ->revealable()
-                                                            ->required(fn (callable $get) => $get('driver') === 'ses'),
+                                                            ->required(fn(callable $get) => $get('driver') === 'ses'),
                                                         Forms\Components\Select::make('providers.ses.region')
                                                             ->label('AWS Region')
                                                             ->options([
@@ -183,9 +183,9 @@ class ManageMail extends SettingsPage
                                                                 'sa-east-1' => 'South America (São Paulo)',
                                                             ])
                                                             ->default('us-east-1')
-                                                            ->required(fn (callable $get) => $get('driver') === 'ses'),
+                                                            ->required(fn(callable $get) => $get('driver') === 'ses'),
                                                     ])
-                                                    ->visible(fn (callable $get) => $get('driver') === 'ses')
+                                                    ->visible(fn(callable $get) => $get('driver') === 'ses')
                                                     ->columns(3),
                                             ])
                                             ->collapsible(),
@@ -233,194 +233,197 @@ class ManageMail extends SettingsPage
                                                         ->color('warning')
                                                         ->icon('fluentui-mail-alert-28-o')
                                                 ])
-                                                ->fullWidth(),
+                                                    ->fullWidth(),
                                             ]),
                                     ])
                                     ->columnSpan(1),
                             ])
                             ->columns(3),
 
-                        // Tabs\Tab::make('Advanced Settings')
-                        //     ->icon('fluentui-settings-32-o')
-                        //     ->schema([
-                        //         Forms\Components\Section::make('Queue Settings')
-                        //             ->description('Configure email queueing for better performance')
-                        //             ->schema([
-                        //                 Forms\Components\Toggle::make('queue_emails')
-                        //                     ->label('Queue Emails')
-                        //                     ->helperText('Process emails in the background for better performance')
-                        //                     ->default(true),
-                        //                 Forms\Components\TextInput::make('queue_name')
-                        //                     ->label('Queue Name')
-                        //                     ->default('emails')
-                        //                     ->required()
-                        //                     ->visible(fn (callable $get) => $get('queue_emails')),
-                        //                 Forms\Components\Select::make('queue_connection')
-                        //                     ->label('Queue Connection')
-                        //                     ->options([
-                        //                         'sync' => 'Synchronous (No Queue)',
-                        //                         'database' => 'Database',
-                        //                         'redis' => 'Redis',
-                        //                         'sqs' => 'Amazon SQS',
-                        //                     ])
-                        //                     ->default('database')
-                        //                     ->required()
-                        //                     ->visible(fn (callable $get) => $get('queue_emails')),
-                        //             ])
-                        //             ->columns(3),
+                        Tabs\Tab::make('Email Template')
+                            ->icon('fluentui-design-ideas-24')
+                            ->schema([
+                                Forms\Components\Section::make('Email Appearance')
+                                    ->description('Customize the look and feel of your emails')
+                                    ->schema([
+                                        Forms\Components\Select::make('template_theme')
+                                            ->label('Email Template Theme')
+                                            ->options([
+                                                'default' => 'Default',
+                                                'minimal' => 'Minimal',
+                                                'corporate' => 'Corporate',
+                                                'modern' => 'Modern',
+                                                'dark' => 'Dark',
+                                            ])
+                                            ->default('default')
+                                            ->columnSpan(2),
+                                        Forms\Components\ColorPicker::make('primary_color')
+                                            ->label('Primary Color')
+                                            ->default('#2D2B8D'),
+                                        Forms\Components\ColorPicker::make('secondary_color')
+                                            ->label('Secondary Color')
+                                            ->default('#FFC903'),
+                                        FileUpload::make('logo_path')
+                                            ->label('Email Logo')
+                                            ->directory('sites')
+                                            ->image()
+                                            ->nullable()
+                                            ->imageResizeMode('cover')
+                                            // ->imageCropAspectRatio('4:1')
+                                            // ->imageResizeTargetWidth('300')
+                                            // ->imageResizeTargetHeight('75')
+                                            ->imageResizeTargetWidth('390')
+                                            ->imageResizeTargetHeight('100')
+                                            ->columnSpan(2)
+                                            ->helperText('Upload a logo for your emails. Recommended size: 390x100 pixels'),
+                                        Textarea::make('footer_text')
+                                            ->label('Email Footer Text')
+                                            ->required()
+                                            ->default('© ' . date('Y') . ' Super Starter. All rights reserved.')
+                                            ->rows(2)
+                                            ->columnSpan(2),
+                                    ])
+                                    ->columns(2),
 
-                        //         Forms\Components\Section::make('Rate Limiting')
-                        //             ->description('Prevent abuse by limiting email sending rates')
-                        //             ->schema([
-                        //                 Forms\Components\Toggle::make('rate_limiting.enabled')
-                        //                     ->label('Enable Rate Limiting')
-                        //                     ->default(true),
-                        //                 Forms\Components\TextInput::make('rate_limiting.attempts')
-                        //                     ->label('Max Attempts')
-                        //                     ->numeric()
-                        //                     ->default(5)
-                        //                     ->visible(fn (callable $get) => $get('rate_limiting.enabled')),
-                        //                 Forms\Components\TextInput::make('rate_limiting.per_minutes')
-                        //                     ->label('Time Window (minutes)')
-                        //                     ->numeric()
-                        //                     ->default(1)
-                        //                     ->visible(fn (callable $get) => $get('rate_limiting.enabled')),
-                        //             ])
-                        //             ->columns(3),
+                                Forms\Components\Section::make('Preview')
+                                    ->description('See how your emails will appear to recipients')
+                                    ->schema([
+                                        Forms\Components\View::make('filament.components.email-template-preview')
+                                            ->viewData(function (callable $get) {
+                                                $logo_path = 'https://placehold.co/390x100.jpeg?text=Email%20Logo';
+                                                if (isset(array_values($get('logo_path'))[0])) {
+                                                    $path = array_values($get('logo_path'))[0];
+                                                    if (! \Illuminate\Support\Str::contains('tmp', $path)) {
+                                                        $logo_path = asset('storage/' . $path);
+                                                    }
+                                                }
+                                                return [
+                                                    'primary_color' => $get('primary_color') ?? '#2D2B8D',
+                                                    'secondary_color' => $get('secondary_color') ?? '#FFC903',
+                                                    'logo_path' => $logo_path,
+                                                    'template_theme' => $get('template_theme') ?? 'default',
+                                                    'footer_text' => $get('footer_text') ?? ('© ' . date('Y') . ' Super Starter. All rights reserved.'),
+                                                ];
+                                            })
+                                            // ->extraAttributes(function (callable $get) {
+                                            //     return [
+                                            //         'primary_color' => $get('primary_color') ?? '#2D2B8D',
+                                            //         'secondary_color' => $get('secondary_color') ?? '#FFC903',
+                                            //         'logo_path' => $get('logo_path'),
+                                            //         'theme_name' => $get('template_theme') ?? 'default',
+                                            //         'footer_text' => $get('footer_text') ?? ('© ' . date('Y') . ' Super Starter. All rights reserved.'),
+                                            //     ];
+                                            // })
+                                            // ->extraAttributes(function (callable $get) {
+                                            //     return [
+                                            //         'primary-color' => $get('primary_color') ?? '#2D2B8D',
+                                            //         'secondary-color' => $get('secondary_color') ?? '#FFC903',
+                                            //         'logo-path' => $get('logo_path'),
+                                            //         'theme-name' => $get('template_theme') ?? 'default',
+                                            //         'footer-text' => $get('footer_text') ?? ('© ' . date('Y') . ' Super Starter. All rights reserved.'),
+                                            //     ];
+                                            // })
+                                            ->columnSpan('full'),
+                                    ]),
+                            ]),
 
-                        //         Forms\Components\Section::make('Notification Settings')
-                        //             ->description('Configure which types of notifications to send')
-                        //             ->schema([
-                        //                 Forms\Components\Toggle::make('notifications_enabled')
-                        //                     ->label('Enable All Notifications')
-                        //                     ->default(true),
-                        //                 Forms\Components\Toggle::make('notification_types.account')
-                        //                     ->label('Account Notifications')
-                        //                     ->helperText('Welcome emails, password resets, and account alerts')
-                        //                     ->default(true)
-                        //                     ->visible(fn (callable $get) => $get('notifications_enabled')),
-                        //                 Forms\Components\Toggle::make('notification_types.system')
-                        //                     ->label('System Notifications')
-                        //                     ->helperText('System alerts, updates, and critical information')
-                        //                     ->default(true)
-                        //                     ->visible(fn (callable $get) => $get('notifications_enabled')),
-                        //                 Forms\Components\Toggle::make('notification_types.marketing')
-                        //                     ->label('Marketing Emails')
-                        //                     ->helperText('Promotional content and newsletter updates')
-                        //                     ->default(false)
-                        //                     ->visible(fn (callable $get) => $get('notifications_enabled')),
-                        //                 Forms\Components\Toggle::make('notification_types.blog')
-                        //                     ->label('Blog Updates')
-                        //                     ->helperText('New content and article notifications')
-                        //                     ->default(false)
-                        //                     ->visible(fn (callable $get) => $get('notifications_enabled')),
-                        //             ])
-                        //             ->columns(2),
+                        Tabs\Tab::make('Advanced Settings')
+                            ->icon('fluentui-settings-32-o')
+                            ->schema([
+                                Forms\Components\Section::make('Queue Settings')
+                                    ->description('Configure email queueing for better performance')
+                                    ->schema([
+                                        Forms\Components\Toggle::make('queue_emails')
+                                            ->label('Queue Emails')
+                                            ->helperText('Process emails in the background for better performance')
+                                            ->default(true),
+                                        Forms\Components\TextInput::make('queue_name')
+                                            ->label('Queue Name')
+                                            ->default('emails')
+                                            ->required()
+                                            ->visible(fn(callable $get) => $get('queue_emails')),
+                                        Forms\Components\Select::make('queue_connection')
+                                            ->label('Queue Connection')
+                                            ->options([
+                                                'sync' => 'Synchronous (No Queue)',
+                                                'database' => 'Database',
+                                                'redis' => 'Redis',
+                                                'sqs' => 'Amazon SQS',
+                                            ])
+                                            ->default('database')
+                                            ->required()
+                                            ->visible(fn(callable $get) => $get('queue_emails')),
+                                    ])
+                                    ->columns(3),
 
-                        //         Forms\Components\Section::make('Debug Options')
-                        //             ->description('Advanced settings for troubleshooting')
-                        //             ->schema([
-                        //                 Forms\Components\Toggle::make('test_mode')
-                        //                     ->label('Enable Test Mode')
-                        //                     ->helperText('All emails will be sent to the test address instead of actual recipients')
-                        //                     ->default(false),
-                        //                 Forms\Components\Select::make('log_channel')
-                        //                     ->label('Log Channel')
-                        //                     ->options([
-                        //                         'stack' => 'Default Stack',
-                        //                         'single' => 'Single File',
-                        //                         'daily' => 'Daily Files',
-                        //                         'slack' => 'Slack',
-                        //                         'null' => 'Null (No Logging)',
-                        //                     ])
-                        //                     ->default('stack'),
-                        //             ])
-                        //             ->columns(2),
-                        //     ]),
+                                Forms\Components\Section::make('Rate Limiting')
+                                    ->description('Prevent abuse by limiting email sending rates')
+                                    ->schema([
+                                        Forms\Components\Toggle::make('rate_limiting.enabled')
+                                            ->label('Enable Rate Limiting')
+                                            ->default(true),
+                                        Forms\Components\TextInput::make('rate_limiting.attempts')
+                                            ->label('Max Attempts')
+                                            ->numeric()
+                                            ->default(5)
+                                            ->visible(fn(callable $get) => $get('rate_limiting.enabled')),
+                                        Forms\Components\TextInput::make('rate_limiting.per_minutes')
+                                            ->label('Time Window (minutes)')
+                                            ->numeric()
+                                            ->default(1)
+                                            ->visible(fn(callable $get) => $get('rate_limiting.enabled')),
+                                    ])
+                                    ->columns(3),
 
-                        // Tabs\Tab::make('Email Template')
-                        //     ->icon('fluentui-design-ideas-24')
-                        //     ->schema([
-                        //         Forms\Components\Section::make('Email Appearance')
-                        //             ->description('Customize the look and feel of your emails')
-                        //             ->schema([
-                        //                 Forms\Components\Select::make('template_theme')
-                        //                     ->label('Email Template Theme')
-                        //                     ->options([
-                        //                         'default' => 'Default',
-                        //                         'minimal' => 'Minimal',
-                        //                         'corporate' => 'Corporate',
-                        //                         'modern' => 'Modern',
-                        //                         'dark' => 'Dark',
-                        //                     ])
-                        //                     ->default('default')
-                        //                     ->columnSpan(2),
-                        //                 Forms\Components\ColorPicker::make('primary_color')
-                        //                     ->label('Primary Color')
-                        //                     ->default('#2D2B8D'),
-                        //                 Forms\Components\ColorPicker::make('secondary_color')
-                        //                     ->label('Secondary Color')
-                        //                     ->default('#FFC903'),
-                        //                 FileUpload::make('logo_path')
-                        //                     ->label('Email Logo')
-                        //                     ->directory('sites')
-                        //                     ->image()
-                        //                     ->nullable()
-                        //                     ->imageResizeMode('cover')
-                        //                     ->imageCropAspectRatio('4:1')
-                        //                     ->imageResizeTargetWidth('300')
-                        //                     ->imageResizeTargetHeight('75')
-                        //                     ->columnSpan(2)
-                        //                     ->helperText('Upload a logo for your emails. Recommended size: 300x75px'),
-                        //                 Textarea::make('footer_text')
-                        //                     ->label('Email Footer Text')
-                        //                     ->default('© ' . date('Y') . ' SuperDuper Starter. All rights reserved.')
-                        //                     ->rows(2)
-                        //                     ->columnSpan(2),
-                        //             ])
-                        //             ->columns(2),
+                                Forms\Components\Section::make('Notification Settings')
+                                    ->description('Configure which types of notifications to send')
+                                    ->schema([
+                                        Forms\Components\Toggle::make('notifications_enabled')
+                                            ->label('Enable All Notifications')
+                                            ->default(true),
+                                        Forms\Components\Toggle::make('notification_types.account')
+                                            ->label('Account Notifications')
+                                            ->helperText('Welcome emails, password resets, and account alerts')
+                                            ->default(true)
+                                            ->visible(fn(callable $get) => $get('notifications_enabled')),
+                                        Forms\Components\Toggle::make('notification_types.system')
+                                            ->label('System Notifications')
+                                            ->helperText('System alerts, updates, and critical information')
+                                            ->default(true)
+                                            ->visible(fn(callable $get) => $get('notifications_enabled')),
+                                        Forms\Components\Toggle::make('notification_types.marketing')
+                                            ->label('Marketing Emails')
+                                            ->helperText('Promotional content and newsletter updates')
+                                            ->default(false)
+                                            ->visible(fn(callable $get) => $get('notifications_enabled')),
+                                        Forms\Components\Toggle::make('notification_types.blog')
+                                            ->label('Blog Updates')
+                                            ->helperText('New content and article notifications')
+                                            ->default(false)
+                                            ->visible(fn(callable $get) => $get('notifications_enabled')),
+                                    ])
+                                    ->columns(2),
 
-                        //         Forms\Components\Section::make('Preview')
-                        //             ->description('See how your emails will appear to recipients')
-                        //             ->schema([
-                        //                 Forms\Components\View::make('filament.components.email-template-preview')
-                        //                     ->viewData(function (callable $get) {
-                        //                         $logo_path = 'https://placehold.co/300x75.jpeg?text=No%20Image';
-                        //                         if(isset(array_values($get('logo_path'))[0])){
-                        //                             $path = array_values($get('logo_path'))[0];
-                        //                             if(! \Illuminate\Support\Str::contains('tmp', $path)){
-                        //                                 $logo_path = asset('storage/' . $path);
-                        //                             } 
-                        //                         }
-                        //                         return [
-                        //                             'primary_color' => $get('primary_color') ?? '#2D2B8D',
-                        //                             'secondary_color' => $get('secondary_color') ?? '#FFC903',
-                        //                             'logo_path' => $logo_path,
-                        //                             'template_theme' => $get('template_theme') ?? 'default',
-                        //                             'footer_text' => $get('footer_text') ?? ('© ' . date('Y') . ' SuperDuper Starter. All rights reserved.'),
-                        //                         ];
-                        //                     })
-                        //                     // ->extraAttributes(function (callable $get) {
-                        //                     //     return [
-                        //                     //         'primary_color' => $get('primary_color') ?? '#2D2B8D',
-                        //                     //         'secondary_color' => $get('secondary_color') ?? '#FFC903',
-                        //                     //         'logo_path' => $get('logo_path'),
-                        //                     //         'theme_name' => $get('template_theme') ?? 'default',
-                        //                     //         'footer_text' => $get('footer_text') ?? ('© ' . date('Y') . ' SuperDuper Starter. All rights reserved.'),
-                        //                     //     ];
-                        //                     // })
-                        //                     // ->extraAttributes(function (callable $get) {
-                        //                     //     return [
-                        //                     //         'primary-color' => $get('primary_color') ?? '#2D2B8D',
-                        //                     //         'secondary-color' => $get('secondary_color') ?? '#FFC903',
-                        //                     //         'logo-path' => $get('logo_path'),
-                        //                     //         'theme-name' => $get('template_theme') ?? 'default',
-                        //                     //         'footer-text' => $get('footer_text') ?? ('© ' . date('Y') . ' SuperDuper Starter. All rights reserved.'),
-                        //                     //     ];
-                        //                     // })
-                        //                     ->columnSpan('full'),
-                        //             ]),
-                        //     ]),
+                                Forms\Components\Section::make('Debug Options')
+                                    ->description('Advanced settings for troubleshooting')
+                                    ->schema([
+                                        Forms\Components\Toggle::make('test_mode')
+                                            ->label('Enable Test Mode')
+                                            ->helperText('All emails will be sent to the test address instead of actual recipients')
+                                            ->default(false),
+                                        Forms\Components\Select::make('log_channel')
+                                            ->label('Log Channel')
+                                            ->options([
+                                                'stack' => 'Default Stack',
+                                                'single' => 'Single File',
+                                                'daily' => 'Daily Files',
+                                                'slack' => 'Slack',
+                                                'null' => 'Null (No Logging)',
+                                            ])
+                                            ->default('stack'),
+                                    ])
+                                    ->columns(2),
+                            ]),
                     ])
                     ->columnSpan('full'),
             ])
@@ -452,7 +455,7 @@ class ManageMail extends SettingsPage
 
             // $this->redirect(static::getUrl(), navigate: FilamentView::hasSpaMode() && is_app_url(static::getUrl()));
         } catch (\Throwable $th) {
-            $this->sendErrorNotification('Failed to update settings: '.$th->getMessage());
+            $this->sendErrorNotification('Failed to update settings: ' . $th->getMessage());
             throw $th;
         }
     }
@@ -463,10 +466,12 @@ class ManageMail extends SettingsPage
     protected function prepareNullableFields(array &$data): void
     {
         $stringDefaults = [
-            'logo_path' => 'sites/email-logo.png',
-            'reply_to_address' => $data['from_address'] ?? 'noreply@superduperstarter.com',
-            'reply_to_name' => $data['from_name'] ?? 'SuperDuper Filament Starter',
-            'footer_text' => '© ' . date('Y') . ' SuperDuper Starter. All rights reserved.',
+            'logo_path' => null,
+            // 'reply_to_address' => $data['from_address'] ?? 'noreply@zzuperstarter.com',
+            // 'reply_to_name' => $data['from_name'] ?? 'ZZuper Starter',
+            'reply_to_address' => null,
+            'reply_to_name' => null,
+            'footer_text' => '© ' . date('Y') . ' Super Starter. All rights reserved.',
             'template_theme' => 'default',
             'primary_color' => '#2D2B8D',
             'secondary_color' => '#FFC903',
@@ -549,14 +554,15 @@ class ManageMail extends SettingsPage
             }
 
             $mailData = [
-                'title' => 'Email Testing from SuperDuper Filament Starter',
+                'title' => 'Email Testing from ZZuper Starter',
                 'body' => 'This is a test email to verify your email configuration settings are working correctly.',
                 'theme' => [
-                    'logo' => $data['logo_path'] ?? 'sites/logo.png',
-                    'primaryColor' => $data['primary_color'] ?? '#2D2B8D',
-                    'secondaryColor' => $data['secondary_color'] ?? '#FFC903',
-                    'footer' => $data['footer_text'] ?? ('© ' . date('Y') . ' SuperDuper Starter. All rights reserved.'),
-                    'theme' => $data['template_theme'] ?? 'default',
+                    // 'logo_path' => $data['logo_path'] ?? 'https://placehold.co/390x100.jpeg?text=No%20Image',
+                    'logo_path' => $data['logo_path'],
+                    'primary_color' => $data['primary_color'] ?? '#2D2B8D',
+                    'secondary_color' => $data['secondary_color'] ?? '#FFC903',
+                    'footer_text' => $data['footer_text'] ?? ('© ' . date('Y') . ' Super Starter. All rights reserved.'),
+                    'template_theme' => $data['template_theme'] ?? 'default',
                 ],
                 'include_sample_attachment' => $data['include_sample_attachment'] ?? false,
             ];
@@ -574,17 +580,17 @@ class ManageMail extends SettingsPage
     public function sendSuccessNotification($title)
     {
         Notification::make()
-                ->title($title)
-                ->success()
-                ->send();
+            ->title($title)
+            ->success()
+            ->send();
     }
 
     public function sendErrorNotification($title)
     {
         Notification::make()
-                ->title($title)
-                ->danger()
-                ->send();
+            ->title($title)
+            ->danger()
+            ->send();
     }
 
     public static function getNavigationGroup(): ?string
@@ -623,4 +629,3 @@ class ManageMail extends SettingsPage
         ];
     }
 }
-

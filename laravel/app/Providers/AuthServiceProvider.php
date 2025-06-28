@@ -27,11 +27,11 @@ class AuthServiceProvider extends ServiceProvider
         BlogPost::class => BlogPostPolicy::class,
         Exception::class => ExceptionPolicy::class,
         \Spatie\Permission\Models\Role::class => \App\Policies\RolePolicy::class,
-        \Datlechin\FilamentMenuBuilder\Models\Menu::class => \App\Policies\MenuPolicy::class,
+        // \Datlechin\FilamentMenuBuilder\Models\Menu::class => \App\Policies\MenuPolicy::class,
         \App\Models\Banner\Content::class => \App\Policies\Banner\ContentPolicy::class,
         \App\Models\Banner\Category::class => \App\Policies\Banner\CategoryPolicy::class,
-        \TomatoPHP\FilamentMediaManager\Models\Media::class => \App\Policies\MediaPolicy::class,
-        \TomatoPHP\FilamentMediaManager\Models\Folder::class => \App\Policies\FolderPolicy::class,
+        // \TomatoPHP\FilamentMediaManager\Models\Media::class => \App\Policies\MediaPolicy::class,
+        // \TomatoPHP\FilamentMediaManager\Models\Folder::class => \App\Policies\FolderPolicy::class,
     ];
 
     /**

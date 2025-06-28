@@ -100,7 +100,7 @@ class ManageGeneral extends SettingsPage
                                 ->visibility('public')
                                 ->moveFiles()
                                 ->imagePreviewHeight('100')
-                                ->helperText('Upload your site logo, Recommended size: 240x50 pixels'),
+                                ->helperText('Upload your site logo, Recommended size: 390x100 pixels'),
 
                             Forms\Components\FileUpload::make('site_favicon')
                                 ->label(fn() => __('page.general_settings.fields.site_favicon'))

@@ -6,10 +6,10 @@ return new class extends SettingsMigration
 {
     public function up(): void
     {
-        $this->migrator->add('mail.from_address', 'notifications@superstarter.com');
-        $this->migrator->add('mail.from_name', 'Super Filament Starter');
-        $this->migrator->add('mail.reply_to_address', 'support@superstarter.com');
-        $this->migrator->add('mail.reply_to_name', 'Super Support');
+        $this->migrator->add('mail.from_address', 'mailer@zzuperstarter.com');
+        $this->migrator->add('mail.from_name', 'ZZuper Starter');
+        $this->migrator->add('mail.reply_to_address', 'support@zzuperstarter.com');
+        $this->migrator->add('mail.reply_to_name', 'ZZuper Support');
 
         $this->migrator->add('mail.driver', 'smtp');
         $this->migrator->add('mail.host', 'mail.localhost.com');
@@ -21,7 +21,7 @@ return new class extends SettingsMigration
         $this->migrator->add('mail.local_domain', null); // Local domain for HELO command, usually not needed unless behind proxy
 
         $this->migrator->add('mail.template_theme', 'default');
-        $this->migrator->add('mail.footer_text', '© ' . date('Y') . ' Super Starter. All rights reserved.');
+        $this->migrator->add('mail.footer_text', '© ' . date('Y') . ' ZZuper Starter. All rights reserved.');
         $this->migrator->add('mail.logo_path', null);
         $this->migrator->add('mail.primary_color', '#2D2B8D');
         $this->migrator->add('mail.secondary_color', '#FFC903');

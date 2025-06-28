@@ -8,7 +8,7 @@ use Filament\Pages\Page;
 
 class Dashboard extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static ?string $navigationIcon = 'fluentui-home-more-20-o';
 
     protected static string $view = 'filament.pages.dashboard';
 

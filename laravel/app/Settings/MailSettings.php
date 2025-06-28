@@ -8,8 +8,8 @@ class MailSettings extends Settings
 {
     public string $from_address;
     public string $from_name;
-    public string $reply_to_address;
-    public string $reply_to_name;
+    public ?string $reply_to_address;
+    public ?string $reply_to_name;
 
     // SMTP configuration
     public ?string $driver;
@@ -24,7 +24,7 @@ class MailSettings extends Settings
     // Email template and design settings
     public string $template_theme;
     public string $footer_text;
-    public string $logo_path;
+    public ?string $logo_path;
     public string $primary_color;
     public string $secondary_color;
 
@@ -152,13 +152,11 @@ class MailSettings extends Settings
     public function getEmailThemeConfig(): array
     {
         return [
-            'logo' => $this->logo_path,
-            'colors' => [
-                'primary' => $this->primary_color,
-                'secondary' => $this->secondary_color,
-            ],
-            'footer' => $this->footer_text,
-            'theme' => $this->template_theme,
+            'logo_path' => $this->logo_path,
+            'primary_color' => $this->primary_color,
+            'secondary_color' => $this->secondary_color,
+            'footer_text' => $this->footer_text,
+            'template_theme' => $this->template_theme,
         ];
     }
 
@@ -168,8 +166,8 @@ class MailSettings extends Settings
     public function isNotificationTypeEnabled(string $type): bool
     {
         return $this->notifications_enabled &&
-               isset($this->notification_types[$type]) &&
-               $this->notification_types[$type];
+            isset($this->notification_types[$type]) &&
+            $this->notification_types[$type];
     }
 
     /**
